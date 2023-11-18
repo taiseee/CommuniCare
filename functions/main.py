@@ -7,9 +7,6 @@ import os
 import openai
 import langchain
 from openai import OpenAI
-# from langchain.llms import OpenAI
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.document_loaders import PyPDFLoader
 import requests
@@ -27,16 +24,22 @@ def json_serial(obj):
     # 上記以外はサポート対象外.
     raise TypeError ("Type %s not serializable" % type(obj))
 
-@https_fn.on_request()
+@https_fn.on_request(timeout_sec=300)
 def get_events_from_pdf(req: https_fn.Request) -> https_fn.Response:
-    # llm = OpenAI()
-    # text = "こんにちは"
-    # llm.invoke(text)
-    loader = PyPDFLoader("https://fukuoka-shakyo.or.jp/user/media/fukuoka-shakyo/page/support/volunteeroffer/boshu-nishiku.pdf")
+    loader = PyPDFLoader("./boshu-nishiku.pdf")
     pages = loader.load_and_split()
-    print(pages)
+    event_extractor = EventExtractor()
+    events = event_extractor.get_events(pages[2].page_content)
+    print(events)
     return https_fn.Response("success", status=200)
 
+@https_fn.on_request(timeout_sec=300)
+def get_events_from_html(req: https_fn.Request) -> https_fn.Response:
+    webtxt = get_webtxt("https://www.fnvc.jp/event/detail/2155")
+    event_extractor = EventExtractor()
+    events = event_extractor.get_events(webtxt)
+    print(events)
+    return https_fn.Response("success", status=200)
 
 class Event(BaseModel):
     title: str = Field(..., description="イベントタイトル")
@@ -46,24 +49,29 @@ class Event(BaseModel):
     body: str = Field(description="内容")
     contact: str = Field(description="連絡先")
 
-@https_fn.on_request()
-def get_events_from_html(req: https_fn.Request) -> https_fn.Response:
-    webtxt = get_webtxt("https://www.fnvc.jp/event/detail/2155")
-    client = OpenAI()
-    parser = PydanticOutputParser(pydantic_object=Event)
-    res = client.chat.completions.create(
-        model="gpt-3.5-turbo-1106",
-        response_format={ "type": "json_object" },
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant designed to output JSON."},
-            {"role": "system", "content": parser.get_format_instructions()},
-            {"role": "user", "content": "以下のwebサイトからイベント情報を取得してください。"},
-            {"role": "user", "content": webtxt}
-        ]
-    )
-    event = res.choices[0].message.content
-    print(event)
-    return https_fn.Response("success", status=200)
+class EventList(BaseModel):
+    events: list[Event] = Field(..., description="イベントリスト")
+
+class EventExtractor:
+    def __init__(self, model="gpt-3.5-turbo-1106"):
+        self.client = OpenAI()
+        self.model = model
+
+    def get_events(self, text):
+        parser = PydanticOutputParser(pydantic_object=EventList)
+        res = self.client.chat.completions.create(
+            model=self.model,
+            response_format={ "type": "json_object" },
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant designed to output JSON."},
+                {"role": "system", "content": parser.get_format_instructions()},
+                {"role": "system", "content": "If there are multiple events, return multiple events. If you don't understand, return  {'events': []}"},
+                {"role": "user", "content": "以下のwebサイトからイベント情報を取得してください。"},
+                {"role": "user", "content": text}
+            ]
+        )
+        events = res.choices[0].message.content
+        return events
 
 def get_webtxt(url):
     response = requests.get(url)
