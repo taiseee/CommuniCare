@@ -1,2 +1,7 @@
 firebase_functions~=0.1.0
 pydantic
+langchain
+pypdf
+openai==0.28
+beautifulsoup4
+requests
