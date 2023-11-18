@@ -6,7 +6,8 @@ from datetime import datetime, date
 import os
 import openai
 import langchain
-from langchain.llms import OpenAI
+from openai import OpenAI
+# from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.output_parsers import PydanticOutputParser
@@ -47,18 +48,20 @@ class Event(BaseModel):
 
 @https_fn.on_request()
 def get_events_from_html(req: https_fn.Request) -> https_fn.Response:
-
     webtxt = get_webtxt("https://www.fnvc.jp/event/detail/2155")
+    client = OpenAI()
     parser = PydanticOutputParser(pydantic_object=Event)
-    prompt = PromptTemplate(
-        template="以下のwebサイトからイベント情報を取得してください。\n{format_instructions}\n{webtxt}\n",
-        input_variables=["webtxt"],
-        partial_variables={"format_instructions": parser.get_format_instructions()}
+    res = client.chat.completions.create(
+        model="gpt-3.5-turbo-1106",
+        response_format={ "type": "json_object" },
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant designed to output JSON."},
+            {"role": "system", "content": parser.get_format_instructions()},
+            {"role": "user", "content": "以下のwebサイトからイベント情報を取得してください。"},
+            {"role": "user", "content": webtxt}
+        ]
     )
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", request_timeout=120)
-    prompt_and_llm = prompt | llm
-    llm_res = prompt_and_llm.invoke({"webtxt": webtxt})
-    event = parser.invoke(llm_res)
+    event = res.choices[0].message.content
     print(event)
     return https_fn.Response("success", status=200)
 
