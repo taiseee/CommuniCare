@@ -1,4 +1,5 @@
-import '@/styles/globals.css'
+// TODO: css設定は後で
+// import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 
 export default function App({ Component, pageProps }: AppProps) {
