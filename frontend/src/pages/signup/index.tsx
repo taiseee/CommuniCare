@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation'
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -25,7 +26,7 @@ export default function SignUp() {
 
     return (
         <form onSubmit={onSubmit}>
-            <h1>Sign Up</h1>
+            <h1>SignUp</h1>
             <div>
                 <label>Email</label>
                 <input type="email"
@@ -44,8 +45,11 @@ export default function SignUp() {
             </div>
             <button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <span>Loading...</span>}
-                Sing UP
+                SingUp
             </button>
+            <div>
+                <Link href="/signin">SignInはこちら</Link>
+            </div>
         </form>
     );
 }
