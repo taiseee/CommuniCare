@@ -29,19 +29,29 @@ export default function SignUp() {
             <h1>SignUp</h1>
             <div>
                 <label>Email</label>
-                <input type="email"
+                <input type="text"
                     {...register("email", {
                         required:'Email is required',
+                        pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: 'Email address must be formatted correctly',
+                        },
                     })} 
                 />
+                {errors.email && <small style={{color: 'red'}}>{errors.email.message}</small>}
             </div>
             <div>
                 <label>Password</label>
                 <input type="password"
                     {...register("password", {
                         required:'Password is required',
+                        minLength: {
+                            value: 6,
+                            message: 'Password must have at least 6 characters',
+                        },
                     })} 
                 />
+                {errors.password && <small style={{color: 'red'}}>{errors.password.message}</small>}
             </div>
             <button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <span>Loading...</span>}

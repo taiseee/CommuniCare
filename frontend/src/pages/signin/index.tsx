@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Link from 'next/link'
 import { useRouter } from 'next/router';
 import { useForm } from "react-hook-form";
@@ -11,6 +12,7 @@ type formInputs = {
 
 export default function SignIn() {
     const router = useRouter();
+    const [signinError, setSigninError] = useState<string>(''); // 追加
     const { handleSubmit, register, formState } = useForm<formInputs>();
     const { errors, isSubmitting } = formState;
 
@@ -20,7 +22,7 @@ export default function SignIn() {
                 router.push('/');
             })
             .catch((error) => {
-                console.log(error);
+                setSigninError(error.message);
             });
     });
 
@@ -29,11 +31,12 @@ export default function SignIn() {
             <h1>SignIn</h1>
             <div>
                 <label>Email</label>
-                <input type="email"
+                <input type="text"
                     {...register("email", {
                         required:'Email is required',
                     })} 
                 />
+                {errors.email && <small style={{color: 'red'}}>{errors.email.message}</small>}
             </div>
             <div>
                 <label>Password</label>
@@ -42,11 +45,15 @@ export default function SignIn() {
                         required:'Password is required',
                     })} 
                 />
+                {errors.password && <small style={{color: 'red'}}>{errors.password.message}</small>}
             </div>
             <button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <span>Loading...</span>}
                 SignIn
             </button>
+            <div>
+                {signinError && <span style={{color: 'red'}}>{signinError}</span>}
+            </div>
             <div>
                 <Link href="/signup">SignUpはこちら</Link>
             </div>
