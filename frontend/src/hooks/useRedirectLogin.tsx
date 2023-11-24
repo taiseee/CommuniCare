@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../pages/firebase';
+import { auth } from '@/pages/firebase';
 
 /**
  * Redirects to /signin if the user is not logged in.

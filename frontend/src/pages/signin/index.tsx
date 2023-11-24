@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router';
 import { useForm } from "react-hook-form";
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from "../firebase"
+import { auth } from "@/pages/firebase";
 
 type formInputs = {
     email: string;
