@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "@/pages/firebase";
+import { auth } from "@/lib/firebaseConfig";
 import { useRequireLogin } from "@/hooks/useRedirectLogin";
 
 export default function Home() {
