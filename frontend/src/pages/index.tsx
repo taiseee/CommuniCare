@@ -1,19 +1,11 @@
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
-import { useRequireLogin } from "@/hooks/useRedirectLogin";
+import { useAuthContext } from '@/provider/AuthProvider';
 
 export default function Home() {
-  useRequireLogin();
   const router = useRouter();
-  const [user, setUser] = useState(auth.currentUser);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-  }, []);
+  const { user } = useAuthContext();
 
   const handleClick = () => {
     signOut(auth).then(() => {
