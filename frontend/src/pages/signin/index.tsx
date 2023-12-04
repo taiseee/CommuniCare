@@ -2,8 +2,8 @@ import { useState } from 'react';
 import Link from 'next/link'
 import { useRouter } from 'next/router';
 import { useForm } from "react-hook-form";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from "@/lib/firebaseConfig";
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { auth, provider } from "@/lib/firebaseConfig";
 
 type formInputs = {
     email: string;
@@ -27,7 +27,6 @@ export default function SignIn() {
     });
 
     const signInWithGoogle = () => {
-        const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
             .then(() => {
                 router.push('/');
