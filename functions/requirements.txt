@@ -1,0 +1,7 @@
+firebase_functions~=0.1.0
+pydantic
+langchain
+pypdf
+openai==1.3.3
+beautifulsoup4
+requests
