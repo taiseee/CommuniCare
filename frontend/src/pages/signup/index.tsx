@@ -73,16 +73,16 @@ export default function SignUp() {
                             </FormLabel>
                             <Input
                                 id='email'
-                                type='email'
+                                type='text'
                                 {...register("email", {
-                                    required:'Email is required',
+                                    required:'メールアドレスを入力てください',
                                     pattern: {
                                         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                        message: 'Email address must be formatted correctly',
+                                        message: 'フォーマットが正しくありません',
                                     },
                                 })}
                             />
-                            {errors.email && <FormErrorMessage>メールアドレスを入力てください</FormErrorMessage>}
+                            {errors.email && <FormErrorMessage>{errors.email.message}</FormErrorMessage>}
                         </FormControl>
 
                         <FormControl isInvalid={errors.password ? true : false}>
@@ -92,10 +92,10 @@ export default function SignUp() {
                                     pr='4.5rem'
                                     type={showPass ? 'text' : 'password'}
                                     {...register("password", {
-                                        required:'Password is required',
+                                        required:'パスワードを入力してください',
                                         minLength: {
                                             value: 6,
-                                            message: 'Password must have at least 6 characters',
+                                            message: 'パスワードは6文字以上にしてください',
                                         },
                                     })}
                                 />
@@ -105,7 +105,7 @@ export default function SignUp() {
                                 </Button>
                                 </InputRightElement>
                             </InputGroup>
-                            {errors.password && <FormErrorMessage>パスワードを入力てください</FormErrorMessage>}
+                            {errors.password && <FormErrorMessage>{errors.password.message}</FormErrorMessage>}
                         </FormControl>
                         <Button
                             marginTop='4'

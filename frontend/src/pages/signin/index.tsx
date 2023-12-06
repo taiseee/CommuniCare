@@ -74,12 +74,16 @@ export default function SignIn() {
                             </FormLabel>
                             <Input
                                 id='email'
-                                type='email'
+                                type='text'
                                 {...register("email", {
-                                    required:'Email is required',
+                                    required:'メールアドレスを入力してください',
+                                    pattern: {
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                        message: 'フォーマットが正しくありません',
+                                    },
                                 })}
                             />
-                            {errors.email && <FormErrorMessage>メールアドレスを入力てください</FormErrorMessage>}
+                            {errors.email && <FormErrorMessage>{errors.email.message}</FormErrorMessage>}
                         </FormControl>
 
                         <FormControl isInvalid={errors.password ? true : false}>
@@ -89,7 +93,7 @@ export default function SignIn() {
                                     pr='4.5rem'
                                     type={showPass ? 'text' : 'password'}
                                     {...register("password", {
-                                        required:'Password is required',
+                                        required:'パスワードを入力してください',
                                     })}
                                 />
                                 <InputRightElement width='4.5rem'>
@@ -98,7 +102,7 @@ export default function SignIn() {
                                 </Button>
                                 </InputRightElement>
                             </InputGroup>
-                            {errors.password && <FormErrorMessage>パスワードを入力てください</FormErrorMessage>}
+                            {errors.password && <FormErrorMessage>{errors.password.message}</FormErrorMessage>}
                         </FormControl>
                         <Button
                             marginTop='4'
