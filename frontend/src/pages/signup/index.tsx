@@ -34,18 +34,18 @@ export default function SignUp() {
     const { errors, isSubmitting } = formState;
     const [showPass, setShowPass] = useState<boolean>(false);
 
-    const onSubmit = handleSubmit((data) => {
-        createUserWithEmailAndPassword(auth, data.email, data.password)
+    const onSubmit = async (data: formInputs) => {
+        return createUserWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
                 router.push('/');
             })
             .catch((error) => {
                 console.log(error);
             });
-    });
+    };
 
-    const signInWithGoogle = () => {
-        signInWithPopup(auth, provider)
+    const signInWithGoogle = async () => {
+        return signInWithPopup(auth, provider)
             .then(() => {
                 router.push('/');
             })
@@ -65,7 +65,7 @@ export default function SignUp() {
             >
                 <VStack spacing='5'>
                     <Heading>新規登録</Heading>
-                    <form onSubmit={onSubmit}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                     <VStack spacing='4' alignItems='left'>
                         <FormControl isInvalid={errors.email ? true : false}>
                             <FormLabel htmlFor='email' textAlign='start'>
@@ -113,6 +113,8 @@ export default function SignUp() {
                             bg='teal.400'
                             type='submit'
                             paddingX='auto'
+                            isLoading={isSubmitting}
+                            loadingText='新規登録'
                         >
                             新規登録
                         </Button>

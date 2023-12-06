@@ -35,18 +35,18 @@ export default function SignIn() {
     const { errors, isSubmitting } = formState;
     const [showPass, setShowPass] = useState<boolean>(false);
 
-    const onSubmit = handleSubmit((data) => {
-        signInWithEmailAndPassword(auth, data.email, data.password)
+    const onSubmit = async (data: formInputs) => {
+        return signInWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
                 router.push('/');
             })
             .catch((error) => {
                 setSigninError(error.message);
             });
-    });
+    };
 
-    const signInWithGoogle = () => {
-        signInWithPopup(auth, provider)
+    const signInWithGoogle = async () => {
+        return signInWithPopup(auth, provider)
             .then(() => {
                 router.push('/');
             })
@@ -66,7 +66,7 @@ export default function SignIn() {
             >
                 <VStack spacing='5'>
                     <Heading>ログイン</Heading>
-                    <form onSubmit={onSubmit}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                     <VStack spacing='4' alignItems='left'>
                         <FormControl isInvalid={errors.email ? true : false}>
                             <FormLabel htmlFor='email' textAlign='start'>
@@ -110,6 +110,8 @@ export default function SignIn() {
                             bg='teal.400'
                             type='submit'
                             paddingX='auto'
+                            isLoading={isSubmitting}
+                            loadingText='ログイン'
                         >
                             ログイン
                         </Button>
