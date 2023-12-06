@@ -128,6 +128,7 @@ export default function SignUp() {
                         <Button
                             bg='white'
                             color='black'
+                            variant='outline'
                             width='100%'
                             onClick={signInWithGoogle}
                         >

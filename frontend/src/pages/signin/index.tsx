@@ -125,6 +125,7 @@ export default function SignIn() {
                         <Button
                             bg='white'
                             color='black'
+                            variant='outline'
                             width='100%'
                             onClick={signInWithGoogle}
                         >
