@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation'
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, provider } from "@/lib/firebaseConfig";
+import { firebaseError } from '@/lib/firebaseError';
 import {
     FormControl,
     FormLabel,
@@ -16,6 +17,7 @@ import {
     Flex,
     VStack,
     FormErrorMessage,
+    Text,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
@@ -29,6 +31,7 @@ type formInputs = {
  * @description ユーザのサインアップを行う画面
  */
 export default function SignUp() {
+    const [errMsg, setErrMsg] = useState<string>('');
     const router = useRouter();
     const { handleSubmit, register, formState } = useForm<formInputs>();
     const { errors, isSubmitting } = formState;
@@ -40,7 +43,7 @@ export default function SignUp() {
                 router.push('/');
             })
             .catch((error) => {
-                console.log(error);
+                setErrMsg(firebaseError(error, 'signup'));
             });
     };
 
@@ -50,7 +53,7 @@ export default function SignUp() {
                 router.push('/');
             })
             .catch((error) => {
-                console.log(error);
+                setErrMsg(firebaseError(error, 'signup'));
             });
     };
 
@@ -139,6 +142,7 @@ export default function SignUp() {
                         </Button>
                     </VStack>
                     </form>
+                    {errMsg && <Text color='red'>{errMsg}</Text>}
                 </VStack>
             </Flex>
             {/* <form onSubmit={onSubmit}>
