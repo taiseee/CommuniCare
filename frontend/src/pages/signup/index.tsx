@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation'
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, provider } from "@/lib/firebaseConfig";
+import { firebaseError } from '@/lib/firebaseError';
 import {
     FormControl,
     FormLabel,
@@ -16,6 +17,7 @@ import {
     Flex,
     VStack,
     FormErrorMessage,
+    Text,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
@@ -29,28 +31,29 @@ type formInputs = {
  * @description ユーザのサインアップを行う画面
  */
 export default function SignUp() {
+    const [errMsg, setErrMsg] = useState<string>('');
     const router = useRouter();
     const { handleSubmit, register, formState } = useForm<formInputs>();
     const { errors, isSubmitting } = formState;
     const [showPass, setShowPass] = useState<boolean>(false);
 
-    const onSubmit = handleSubmit((data) => {
-        createUserWithEmailAndPassword(auth, data.email, data.password)
+    const onSubmit = async (data: formInputs) => {
+        return createUserWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
                 router.push('/');
             })
             .catch((error) => {
-                console.log(error);
+                setErrMsg(firebaseError(error, 'signup'));
             });
-    });
+    };
 
-    const signInWithGoogle = () => {
-        signInWithPopup(auth, provider)
+    const signInWithGoogle = async () => {
+        return signInWithPopup(auth, provider)
             .then(() => {
                 router.push('/');
             })
             .catch((error) => {
-                console.log(error);
+                setErrMsg(firebaseError(error, 'signup'));
             });
     };
 
@@ -65,7 +68,7 @@ export default function SignUp() {
             >
                 <VStack spacing='5'>
                     <Heading>新規登録</Heading>
-                    <form onSubmit={onSubmit}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                     <VStack spacing='4' alignItems='left'>
                         <FormControl isInvalid={errors.email ? true : false}>
                             <FormLabel htmlFor='email' textAlign='start'>
@@ -73,16 +76,16 @@ export default function SignUp() {
                             </FormLabel>
                             <Input
                                 id='email'
-                                type='email'
+                                type='text'
                                 {...register("email", {
-                                    required:'Email is required',
+                                    required:'メールアドレスを入力てください',
                                     pattern: {
                                         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                        message: 'Email address must be formatted correctly',
+                                        message: 'フォーマットが正しくありません',
                                     },
                                 })}
                             />
-                            {errors.email && <FormErrorMessage>メールアドレスを入力てください</FormErrorMessage>}
+                            {errors.email && <FormErrorMessage>{errors.email.message}</FormErrorMessage>}
                         </FormControl>
 
                         <FormControl isInvalid={errors.password ? true : false}>
@@ -92,10 +95,10 @@ export default function SignUp() {
                                     pr='4.5rem'
                                     type={showPass ? 'text' : 'password'}
                                     {...register("password", {
-                                        required:'Password is required',
+                                        required:'パスワードを入力してください',
                                         minLength: {
                                             value: 6,
-                                            message: 'Password must have at least 6 characters',
+                                            message: 'パスワードは6文字以上にしてください',
                                         },
                                     })}
                                 />
@@ -105,7 +108,7 @@ export default function SignUp() {
                                 </Button>
                                 </InputRightElement>
                             </InputGroup>
-                            {errors.password && <FormErrorMessage>パスワードを入力てください</FormErrorMessage>}
+                            {errors.password && <FormErrorMessage>{errors.password.message}</FormErrorMessage>}
                         </FormControl>
                         <Button
                             marginTop='4'
@@ -113,6 +116,8 @@ export default function SignUp() {
                             bg='teal.400'
                             type='submit'
                             paddingX='auto'
+                            isLoading={isSubmitting}
+                            loadingText='新規登録'
                         >
                             新規登録
                         </Button>
@@ -128,6 +133,7 @@ export default function SignUp() {
                         <Button
                             bg='white'
                             color='black'
+                            variant='outline'
                             width='100%'
                             onClick={signInWithGoogle}
                         >
@@ -136,6 +142,7 @@ export default function SignUp() {
                         </Button>
                     </VStack>
                     </form>
+                    {errMsg && <Text color='red'>{errMsg}</Text>}
                 </VStack>
             </Flex>
             {/* <form onSubmit={onSubmit}>

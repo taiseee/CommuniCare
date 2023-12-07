@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { useForm } from "react-hook-form";
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, provider } from "@/lib/firebaseConfig";
+import { firebaseError } from '@/lib/firebaseError';
 import {
     FormControl,
     FormLabel,
@@ -16,6 +17,7 @@ import {
     Flex,
     VStack,
     FormErrorMessage,
+    Text,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
@@ -30,28 +32,28 @@ type formInputs = {
  */
 export default function SignIn() {
     const router = useRouter();
-    const [signinError, setSigninError] = useState<string>(''); // 追加
+    const [errMsg, setErrMsg] = useState<string>('');
     const { handleSubmit, register, formState } = useForm<formInputs>();
     const { errors, isSubmitting } = formState;
     const [showPass, setShowPass] = useState<boolean>(false);
 
-    const onSubmit = handleSubmit((data) => {
-        signInWithEmailAndPassword(auth, data.email, data.password)
+    const onSubmit = async (data: formInputs) => {
+        return signInWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
                 router.push('/');
             })
             .catch((error) => {
-                setSigninError(error.message);
+                setErrMsg(firebaseError(error, 'signin'));
             });
-    });
+    };
 
-    const signInWithGoogle = () => {
-        signInWithPopup(auth, provider)
+    const signInWithGoogle = async () => {
+        return signInWithPopup(auth, provider)
             .then(() => {
                 router.push('/');
             })
             .catch((error) => {
-                setSigninError(error.message);
+                setErrMsg(firebaseError(error, 'signin'));
             });
     };
 
@@ -66,7 +68,7 @@ export default function SignIn() {
             >
                 <VStack spacing='5'>
                     <Heading>ログイン</Heading>
-                    <form onSubmit={onSubmit}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                     <VStack spacing='4' alignItems='left'>
                         <FormControl isInvalid={errors.email ? true : false}>
                             <FormLabel htmlFor='email' textAlign='start'>
@@ -74,12 +76,16 @@ export default function SignIn() {
                             </FormLabel>
                             <Input
                                 id='email'
-                                type='email'
+                                type='text'
                                 {...register("email", {
-                                    required:'Email is required',
+                                    required:'メールアドレスを入力してください',
+                                    pattern: {
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                        message: 'フォーマットが正しくありません',
+                                    },
                                 })}
                             />
-                            {errors.email && <FormErrorMessage>メールアドレスを入力てください</FormErrorMessage>}
+                            {errors.email && <FormErrorMessage>{errors.email.message}</FormErrorMessage>}
                         </FormControl>
 
                         <FormControl isInvalid={errors.password ? true : false}>
@@ -89,7 +95,7 @@ export default function SignIn() {
                                     pr='4.5rem'
                                     type={showPass ? 'text' : 'password'}
                                     {...register("password", {
-                                        required:'Password is required',
+                                        required:'パスワードを入力してください',
                                     })}
                                 />
                                 <InputRightElement width='4.5rem'>
@@ -98,7 +104,7 @@ export default function SignIn() {
                                 </Button>
                                 </InputRightElement>
                             </InputGroup>
-                            {errors.password && <FormErrorMessage>パスワードを入力てください</FormErrorMessage>}
+                            {errors.password && <FormErrorMessage>{errors.password.message}</FormErrorMessage>}
                         </FormControl>
                         <Button
                             marginTop='4'
@@ -106,6 +112,8 @@ export default function SignIn() {
                             bg='teal.400'
                             type='submit'
                             paddingX='auto'
+                            isLoading={isSubmitting}
+                            loadingText='ログイン'
                         >
                             ログイン
                         </Button>
@@ -121,6 +129,7 @@ export default function SignIn() {
                         <Button
                             bg='white'
                             color='black'
+                            variant='outline'
                             width='100%'
                             onClick={signInWithGoogle}
                         >
@@ -129,6 +138,7 @@ export default function SignIn() {
                         </Button>
                     </VStack>
                     </form>
+                    {errMsg && <Text color='red'>{errMsg}</Text>}
                 </VStack>
             </Flex>
         </>
