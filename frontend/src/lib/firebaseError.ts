@@ -1,5 +1,6 @@
+import type { AuthError } from 'firebase/auth';
 
-export const firebaseError = (error: any, method:any):string => {
+export const firebaseError = (error: AuthError, method:string):string => {
     switch (error.code) {
         case 'auth/cancelled-popup-request':
     case 'auth/popup-closed-by-user':
