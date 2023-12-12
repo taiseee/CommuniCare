@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import NextLink from 'next/link';
 import { Link, Box, Flex, Text, Button, Stack } from '@chakra-ui/react';
 
 
@@ -71,7 +72,7 @@ const MenuToggle: React.FC<MenuToggleProps> = ({ toggle, isOpen }) => {
 
 const MenuItem: React.FC<MenuItemProps> = ({ children, isLast, to = "/", ...rest }) => {
   return (
-    <Link href={to}>
+    <Link as={NextLink} href={to}>
       <Text display="block" {...rest}>
         {children}
       </Text>
