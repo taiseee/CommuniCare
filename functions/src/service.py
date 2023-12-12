@@ -30,3 +30,16 @@ def get_webtxt(url):
     soup = BeautifulSoup(response.text, 'html.parser')
     webtxt = soup.get_text()
     return webtxt
+
+class TextEmbedder:
+    def __init__(self, model="text-embedding-ada-002"):
+        self.client = OpenAI()
+        self.model = model
+
+    def embed_text(self, text):
+        res = self.client.embeddings.create(
+            model=self.model,
+            input=text
+        )
+        vec = res.data
+        return vec
