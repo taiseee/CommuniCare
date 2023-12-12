@@ -3,10 +3,6 @@ import { useState } from 'react';
 import NextLink from 'next/link';
 import { Link, Box, Flex, Text, Button, Stack } from '@chakra-ui/react';
 
-
-type NavbarProps = {
-};
-
 type MenuToggleProps = {
   toggle: () => void;
   isOpen: boolean;
@@ -27,7 +23,7 @@ type NavBarContainerProps = {
 } & React.ComponentPropsWithoutRef<'nav'>;
 
 // コンポーネントの定義
-const Navbar: React.FC<NavbarProps> = ({ ...props }) => {
+function Navbar({ ...props }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const toggle = () => setIsOpen(!isOpen);
@@ -40,29 +36,33 @@ const Navbar: React.FC<NavbarProps> = ({ ...props }) => {
   );
 };
 
-const CloseIcon: React.FC = () => (
-  <svg width="24" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-    <title>Close</title>
-    <path
+function CloseIcon() {
+  return (
+    <svg width="24" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+      <title>Close</title>
+      <path
+        fill="white"
+        d="M9.00023 7.58599L13.9502 2.63599L15.3642 4.04999L10.4142 8.99999L15.3642 13.95L13.9502 15.364L9.00023 10.414L4.05023 15.364L2.63623 13.95L7.58623 8.99999L2.63623 4.04999L4.05023 2.63599L9.00023 7.58599Z"
+      />
+    </svg>
+  );
+};
+
+function MenuIcon() {
+  return (
+    <svg
+      width="24px"
+      viewBox="0 0 20 20"
+      xmlns="http://www.w3.org/2000/svg"
       fill="white"
-      d="M9.00023 7.58599L13.9502 2.63599L15.3642 4.04999L10.4142 8.99999L15.3642 13.95L13.9502 15.364L9.00023 10.414L4.05023 15.364L2.63623 13.95L7.58623 8.99999L2.63623 4.04999L4.05023 2.63599L9.00023 7.58599Z"
-    />
-  </svg>
-);
+    >
+      <title>Menu</title>
+      <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+    </svg>
+  );
+};
 
-const MenuIcon: React.FC = () => (
-  <svg
-    width="24px"
-    viewBox="0 0 20 20"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="white"
-  >
-    <title>Menu</title>
-    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-  </svg>
-);
-
-const MenuToggle: React.FC<MenuToggleProps> = ({ toggle, isOpen }) => {
+function MenuToggle({ toggle, isOpen }: MenuToggleProps) {
   return (
     <Box display={{ base: "block", md: "none" }} onClick={toggle}>
       {isOpen ? <CloseIcon /> : <MenuIcon />}
@@ -70,7 +70,7 @@ const MenuToggle: React.FC<MenuToggleProps> = ({ toggle, isOpen }) => {
   );
 };
 
-const MenuItem: React.FC<MenuItemProps> = ({ children, isLast, to = "/", ...rest }) => {
+function MenuItem({ children, isLast, to = "/", ...rest }: MenuItemProps): React.ReactNode {
   return (
     <Link as={NextLink} href={to}>
       <Text display="block" {...rest}>
@@ -80,7 +80,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ children, isLast, to = "/", ...rest
   );
 };
 
-const MenuLinks: React.FC<MenuLinksProps> = ({ isOpen }) => {
+function MenuLinks({ isOpen }: MenuLinksProps): React.ReactNode {
   return (
     <Box
       display={{ base: isOpen ? "block" : "none", md: "block" }}
@@ -115,7 +115,7 @@ const MenuLinks: React.FC<MenuLinksProps> = ({ isOpen }) => {
   );
 };
 
-const NavBarContainer: React.FC<NavBarContainerProps> = ({ children, ...props }) => {
+function NavBarContainer({ children, ...props }: NavBarContainerProps): React.ReactNode {
   return (
     <Flex
       as="nav"
