@@ -41,5 +41,5 @@ class TextEmbedder:
             model=self.model,
             input=text
         )
-        vec = res.data
+        vec = res.data[0].embedding
         return vec
