@@ -1,15 +1,21 @@
-import { createContext, ReactNode, useState, useContext, useEffect } from 'react';
+import {
+    createContext,
+    ReactNode,
+    useState,
+    useContext,
+    useEffect
+} from 'react';
 import type { User } from '@firebase/auth';
 import { onAuthStateChanged } from '@firebase/auth';
 import { auth } from '@/lib/firebaseConfig';
 
 export type GlobalAuthState = {
-    user: User | null | undefined // 認証済み | 未認証 | 認証中
-}
+    user: User | null | undefined; // 認証済み | 未認証 | 認証中
+};
 
 const initialState: GlobalAuthState = {
-    user: undefined,
-}
+    user: undefined
+};
 
 const AuthContext = createContext<GlobalAuthState>(initialState);
 
@@ -26,11 +32,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser({ user });
             });
         } catch (error) {
-            setUser(initialState)
-            throw error
+            setUser(initialState);
+            throw error;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>
+    return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;
 }
