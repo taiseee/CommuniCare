@@ -62,7 +62,6 @@ export default function SignUp() {
             <Flex
                 flexDirection='column'
                 width='100%'
-                height='100vh'
                 justifyContent='center'
                 alignItems='center'
             >
