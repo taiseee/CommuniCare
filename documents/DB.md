@@ -1,73 +1,75 @@
 ### テーブル設計
 
-1. **Users（ユーザー）**
+1. **users（ユーザー）**
 
-   | フィールド名       | 説明               | データ型     |
-   |------------------|------------------|------------|
-   | UserID           | ユーザーID（主キー） | 整数       |
-   | Name             | 名前               | 文字列     |
-   | Email            | メールアドレス       | 文字列     |
-   | Password         | パスワード          | 文字列     |
-   | GenderID           | 性別ID               | 文字列     |
-   | Interests        | 興味               | 文字列     |
-   | Skills           | スキル             | 文字列     |
-   | Hobbies          | 趣味               | 文字列     |
-   | self_introduction  | 自己紹介       | 文字列     |
+   | Field Name         | Description             | Data Type |
+   |--------------------|-------------------------|-----------|
+   | id                 | ユーザーID（主キー）     | integer   |
+   | UID                | UID                     | string    |
+   | name               | 名前                   | string    |
+   | age                | 年齢                   | integer   |
+   | gender             | 性別                   | integer   |
+   | interests          | 興味のあるもの           | string    |
+   | hobbies            | 趣味                   | string    |
+   | selfIntroduction   | 自己紹介               | string    |
+   | eventLiveliness    | イベント活発度         | float     |
+   | eventScale         | イベント規模           | float     |
+   | eventAgeRange      | イベント年齢層         | float     |
+   | eventFatigue       | イベント疲労度         | float     |
 
-2. **Gender(性別)**
-   | フィールド名   | 説明             | データ型   |
-    |--------------|----------------|----------|
-    | id      | 性別ID（主キー） | 整数     |
-    | name        | 性別名         | 文字列   |
+2. **events（イベント）**
 
-3. **Events（イベント）**
+   | Field Name     | Description             | Data Type |
+   |----------------|-------------------------|-----------|
+   | id             | イベントID（主キー）     | integer   |
+   | title          | タイトル               | string    |
+   | description    | 説明                   | string    |
+   | location       | 場所                   | string    |
+   | dateTime       | 開始日時               | datetime  |
+   | category       | カテゴリ               | string    |
+   | contact        | 連絡先                 | string    |
+   | hostId         | 主催者ID（外部キー）     | integer   |
 
-   | フィールド名   | 説明             | データ型   |
-   |--------------|----------------|----------|
-   | EventID      | イベントID（主キー） | 整数     |
-   | Title        | タイトル         | 文字列   |
-   | Description  | 説明             | 文字列   |
-   | Location     | 場所             | 文字列   |
-   | start_DateTime     | 開始日時             | 日時     |
-    | end_DateTime     | 終了日時             | 日時     |
-   | Tags         | タグ             | 文字列   |
-   | Category     | カテゴリ         | 文字列   |
+3. **userEvents（ユーザー参加イベント）**
 
-4. **UserEvents（ユーザー参加イベント）**
+   | Field Name | Description             | Data Type |
+   |------------|-------------------------|-----------|
+   | id         | ユーザーイベントID（主キー） | integer   |
+   | userId     | ユーザーID（外部キー）     | integer   |
+   | eventId    | イベントID（外部キー）     | integer   |
 
-   | フィールド名   | 説明                   | データ型   |
-   |--------------|----------------------|----------|
-   | UserEventID  | ユーザーイベントID（主キー） | 整数     |
-   | UserID       | ユーザーID（外部キー）     | 整数     |
-   | EventID      | イベントID（外部キー）     | 整数     |
-   | Status       | ステータス             | 文字列   |
+4. **hosts（イベント主催団体）**
 
-5. **EventHosts（イベント主催者）**
+   | Field Name | Description             | Data Type |
+   |------------|-------------------------|-----------|
+   | id         | 主催者ID（主キー）         | integer   |
+   | name       | 主催団体者名             | string    |
 
-   | フィールド名 | 説明                 | データ型 |
-   |------------|--------------------|--------|
-   | HostID     | 主催者ID（主キー）       | 整数   |
-   | UserID     | ユーザーID（外部キー）   | 整数   |
-   | EventID    | イベントID（外部キー）   | 整数   |
+5. **reviews(振り返り)**
 
-6. **ChatMessages（チャットメッセージ）**
+   | Field Name       | Description             | Data Type |
+   |------------------|-------------------------|-----------|
+   | id               | 振り返りID（主キー）       | integer   |
+   | usereventId      | イベントID（外部キー）     | integer   |
+   | content          | 振り返り内容           | string    |
+   | eventLiveliness  | イベント活発度         | float     |
+   | eventScale       | イベント規模           | float     |
+   | eventAgeRange    | イベント年齢層         | float     |
+   | eventFatigue     | イベント疲労度         | float     |
+   | eventSatisfaction| イベント満足度         | float     |
 
-   | フィールド名 | 説明               | データ型 |
-   |------------|------------------|--------|
-   | MessageID  | メッセージID（主キー） | 整数   |
-   | SenderID   | 送信者ID（外部キー）   | 整数   |
-   | ReceiverID | 受信者ID（外部キー）   | 整数   |
-   | EventID    | イベントID（外部キー） | 整数   |
-   | Message    | メッセージ           | 文字列 |
-   | DateTime   | 送信日時             | 日時   |
+6.  **eventVectors**
 
-### 考慮事項
+   | Field Name | Description             | Data Type |
+   |------------|-------------------------|-----------|
+   | id         | イベントベクトルID（主キー） | integer   |
+   | eventId    | イベントID（外部キー）     | integer   |
+   | vector     | ベクトル               | list      |
 
-- 性別と趣味のフィールドはユーザーの特性をより詳細に表すために追加されました。
-- データ型は簡単な説明のために使用されていますが、実際のデータベース設計では、データのサイズや形式をより詳細に定義する必要があります。
-- ユーザーテーブルのパスワードはセキュリティのために
+7.  **userVectors**
 
-暗号化されるべきです。
-- テーブル間の関連付けは、外部キーを使用して実装されます。
-
-このデータベース設計は、CommuniCareアプリケーションの機能をサポートし、将来的な拡張に対応するための基盤となります。
+   | Field Name | Description             | Data Type |
+   |------------|-------------------------|-----------|
+   | id         | ユーザーベクトルID（主キー） | integer   |
+   | userId     | ユーザーID（外部キー）     | integer   |
+   | vector     | ベクトル               | list      |
