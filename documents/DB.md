@@ -56,6 +56,32 @@
    | userId     | ユーザーID（外部キー）     | integer   |
    | vector     | ベクトル               | list      |
 
+7. **eventBallots**
+
+   | Field Name | Description             | Data Type |
+   |------------|-------------------------|-----------|
+   | id         | イベント投票ID（主キー）   | integer   |
+   | groupId     | グループID（外部キー）     | integer   |
+   | startDateTime | 開始日時               | datetime  |
+   | endDateTime | 終了日時               | datetime  |
+
+8. **evntBallotChoices**
+
+   | Field Name | Description             | Data Type |
+   |------------|-------------------------|-----------|
+   | id         | 投票選択肢ID（主キー）     | integer   |
+   | eventBallotId   | イベント投票ID（外部キー）   | integer   |
+   | eventId     | イベントID                 | integer   |
+
+9. **userBallots**
+   | Field Name | Description             | Data Type |
+   |------------|-------------------------|-----------|
+   | id         | ユーザー投票ID（主キー）   | integer   |
+   | userId     | ユーザーID（外部キー）     | integer   |
+   | eventBallotId   | イベント投票ID（外部キー）   | integer   |
+   | eventId     | イベントID                 | integer   |
+   | isParticipant | 参加する         | boolean   |
+
 ~~5. **reviews(振り返り)**~~
 
    | Field Name       | Description             | Data Type |
