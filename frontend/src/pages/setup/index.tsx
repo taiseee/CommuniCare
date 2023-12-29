@@ -10,7 +10,7 @@ export default function Setup() {
                 doc(db, 'users', user?.uid),
                 {
                     uid: user?.uid,
-                    name: '武石航汰',
+                    name: '武石航汰'
                 },
                 {
                     merge: true
@@ -20,14 +20,12 @@ export default function Setup() {
                 console.log('書き込み成功！！');
             });
         }
-    }
+    };
 
     return (
         <>
             <h1>Setup</h1>
-            <button onClick={handleClick}>
-                更新！！
-            </button>
+            <button onClick={handleClick}>更新！！</button>
         </>
     );
 }
