@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useAuthContext } from '@/provider/AuthProvider';
+import { getEmbedding } from './getEmbedding';
 
 type formInputs = {
     uid: string;
@@ -32,7 +33,8 @@ export default function Setup() {
     const { errors, isSubmitting } = formState;
 
     const onSubmit = async (data: formInputs) => {
-        return setDoc(doc(db, 'users', data.uid), data, { merge: true })
+        const vector = await getEmbedding(data.hobbie);
+        return setDoc(doc(db, 'users', data.uid), { ...data, vector}, { merge: true })
             .then(() => {
                 // TODO: 更新後は画面遷移等何らかのアクションが必要
                 console.log('書き込み成功！！');
