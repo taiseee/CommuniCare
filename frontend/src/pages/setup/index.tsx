@@ -13,31 +13,43 @@ import {
     Textarea
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
+import { getEmbedding } from '@/lib/getEmbedding';
 import { useAuthContext } from '@/provider/AuthProvider';
-import { getEmbedding } from './getEmbedding';
 
 type formInputs = {
     uid: string;
     name: string;
     age: number;
     gender: number;
+    interest: string;
     hobbie: string;
     selfIntroduction: string;
 };
 
 export default function Setup() {
+    const router = useRouter();
     const { user } = useAuthContext();
     const { handleSubmit, register, formState } = useForm<formInputs>();
     const { errors, isSubmitting } = formState;
 
     const onSubmit = async (data: formInputs) => {
-        const vector = await getEmbedding(data.hobbie);
-        return setDoc(doc(db, 'users', data.uid), { ...data, vector}, { merge: true })
+        const hobVec = await getEmbedding(data.hobbie);
+        const interVec = await getEmbedding(data.interest);
+        const userVec = hobVec.map((num, idx) => {
+            return (num + interVec[idx]) / 2;
+        });
+
+        const age = Number(data.age);
+        const gender = Number(data.gender);
+
+        const userDoc = { ...data, userVec, age, gender };
+
+        return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true })
             .then(() => {
-                // TODO: 更新後は画面遷移等何らかのアクションが必要
-                console.log('書き込み成功！！');
+                router.push('/');
             })
             .catch((error) => {
                 console.log(error);
@@ -109,6 +121,26 @@ export default function Setup() {
                                     <option value="2">女</option>
                                     <option value="3">その他</option>
                                 </Select>
+                            </FormControl>
+                            <FormControl
+                                isInvalid={errors.interest ? true : false}
+                            >
+                                <FormLabel htmlFor="interest">
+                                    興味のあるもの
+                                </FormLabel>
+                                <Input
+                                    id="interest"
+                                    type="text"
+                                    {...register('interest', {
+                                        required:
+                                            '興味のあるものを入力してください'
+                                    })}
+                                />
+                                {errors.interest && (
+                                    <FormErrorMessage>
+                                        {errors.interest.message}
+                                    </FormErrorMessage>
+                                )}
                             </FormControl>
                             <FormControl
                                 isInvalid={errors.hobbie ? true : false}
