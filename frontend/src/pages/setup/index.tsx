@@ -24,8 +24,8 @@ type formInputs = {
     name: string;
     age: number;
     gender: number;
-    interest: string;
-    hobbie: string;
+    interests: string;
+    hobbies: string;
     selfIntroduction: string;
 };
 
@@ -36,8 +36,8 @@ export default function Setup() {
     const { errors, isSubmitting } = formState;
 
     const onSubmit = async (data: formInputs) => {
-        const hobVec = await getEmbedding(data.hobbie);
-        const interVec = await getEmbedding(data.interest);
+        const hobVec = await getEmbedding(data.hobbies);
+        const interVec = await getEmbedding(data.interests);
         const userVec = hobVec.map((num, idx) => {
             return (num + interVec[idx]) / 2;
         });
@@ -123,39 +123,39 @@ export default function Setup() {
                                 </Select>
                             </FormControl>
                             <FormControl
-                                isInvalid={errors.interest ? true : false}
+                                isInvalid={errors.interests ? true : false}
                             >
-                                <FormLabel htmlFor="interest">
+                                <FormLabel htmlFor="interests">
                                     興味のあるもの
                                 </FormLabel>
                                 <Input
-                                    id="interest"
+                                    id="interests"
                                     type="text"
-                                    {...register('interest', {
+                                    {...register('interests', {
                                         required:
                                             '興味のあるものを入力してください'
                                     })}
                                 />
-                                {errors.interest && (
+                                {errors.interests && (
                                     <FormErrorMessage>
-                                        {errors.interest.message}
+                                        {errors.interests.message}
                                     </FormErrorMessage>
                                 )}
                             </FormControl>
                             <FormControl
-                                isInvalid={errors.hobbie ? true : false}
+                                isInvalid={errors.hobbies ? true : false}
                             >
-                                <FormLabel htmlFor="hobbie">趣味</FormLabel>
+                                <FormLabel htmlFor="hobbies">趣味</FormLabel>
                                 <Input
-                                    id="hobbie"
+                                    id="hobbies"
                                     type="text"
-                                    {...register('hobbie', {
+                                    {...register('hobbies', {
                                         required: '趣味を入力してください'
                                     })}
                                 />
-                                {errors.hobbie && (
+                                {errors.hobbies && (
                                     <FormErrorMessage>
-                                        {errors.hobbie.message}
+                                        {errors.hobbies.message}
                                     </FormErrorMessage>
                                 )}
                             </FormControl>
