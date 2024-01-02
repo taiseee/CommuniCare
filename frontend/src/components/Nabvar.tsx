@@ -101,7 +101,7 @@ function MenuLinks({ isOpen }: MenuLinksProps): React.ReactNode {
             >
                 <MenuItem to="/">ホーム</MenuItem>
                 <MenuItem to="/search">検索</MenuItem>
-                <MenuItem to="/faetures">チャット</MenuItem>
+                <MenuItem to="/group">グループ</MenuItem>
                 <MenuItem to="/signin">
                     <Button
                         size="sm"
@@ -131,10 +131,10 @@ function NavBarContainer({
             justify="space-between"
             wrap="wrap"
             w="100%"
-            mb={8}
             p={8}
-            bg={['teal.400', 'teal.400', 'transparent', 'transparent']}
-            color={['white', 'white', 'teal.400', 'teal.400']}
+            shadow="md"
+            bg={['teal.400', 'teal.400', 'teal.400', 'teal.400']}
+            color={['white', 'white', 'white', 'white']}
             {...props}
         >
             {children}

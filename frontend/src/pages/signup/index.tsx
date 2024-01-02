@@ -64,6 +64,7 @@ export default function SignUp() {
                 width="100%"
                 justifyContent="center"
                 alignItems="center"
+                pt={4}
             >
                 <VStack spacing="5">
                     <Heading>新規登録</Heading>
