@@ -80,7 +80,7 @@
    | userId     | ユーザーID（外部キー）     | integer   |
    | eventBallotId   | イベント投票ID（外部キー）   | integer   |
    | eventId     | イベントID                 | integer   |
-   | isParticipant | 参加する         | boolean   |
+   | participantStatus | 参加しない(0),参加する(1),未定のステータス(2)         | integer   |
 
 ~~5. **reviews(振り返り)**~~
 
