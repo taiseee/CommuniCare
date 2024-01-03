@@ -20,7 +20,7 @@ function GroupList() {
         const groupsCollection = collection(db, 'groups');
         const groupsSnapshot = await getDocs(groupsCollection);
         const groupLists = groupsSnapshot.docs.map((doc) => {
-            return { ...(doc.data() as Group) };
+            return { ...(doc.data() as Group), id: doc.id };
         });
         setGroups(groupLists);
     };
@@ -32,7 +32,7 @@ function GroupList() {
         <Flex flexDir="column" m={4}>
             <Heading size="lg">所属グループ</Heading>
             {groups.map((group) => (
-                <Card key={group.id} mt={4} _hover={{ bg: 'gray.100' }} as={NextLink} href='/group/1'>
+                <Card key={group.id} mt={4} _hover={{ bg: 'gray.100' }} as={NextLink} href={`/group/${group.id}`}>
                     <CardHeader>
                         <Heading size="md">{group.name}</Heading>
                     </CardHeader>
