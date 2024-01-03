@@ -16,7 +16,11 @@ import {
     Divider,
     Button,
     ButtonGroup,
-    Tag
+    Tag,
+    TagLabel,
+    TagCloseButton,
+    Avatar,
+    AvatarGroup
 } from '@chakra-ui/react';
 
 // プロフィールの型定義
@@ -30,6 +34,72 @@ interface Profile {
     selfIntroduction: string;
 }
 
+function ParticipationButton({ status }) {
+    return (
+        <>
+            {status === 0 ? (
+                <Box mt={2}>
+                    <Tag borderRadius="full" colorScheme="red">
+                        <TagLabel>不参加</TagLabel>
+                        <TagCloseButton />
+                    </Tag>
+                </Box>
+            ) : status === 1 ? (
+                <Box mt={2}>
+                    <Tag borderRadius="full" colorScheme="teal">
+                        <TagLabel>参加</TagLabel>
+                        <TagCloseButton />
+                    </Tag>
+                </Box>
+            ) : (
+                <Flex flexDirection="column">
+                    <Box mt={2}>
+                        <Tag borderRadius="full">
+                            <TagLabel>未定</TagLabel>
+                            <TagCloseButton />
+                        </Tag>
+                    </Box>
+                    <ButtonGroup gap="1" mt={2}>
+                        <Button size="sm" colorScheme="gray">
+                            参加しない
+                        </Button>
+                        <Button size="sm" colorScheme="teal">
+                            参加する
+                        </Button>
+                    </ButtonGroup>
+                </Flex>
+            )}
+        </>
+    );
+}
+
+function ParticipantList() {
+    return (
+        <>
+            <AvatarGroup size="sm" max={4} mt={2}>
+                <Avatar
+                    name="Ryan Florence"
+                    src="https://bit.ly/ryan-florence"
+                    bg='gray.100'
+                    color='black'
+                />
+                <Avatar
+                    name="Segun Adebayo"
+                    src="https://bit.ly/sage-adebayo"
+                />
+                <Avatar name="Kent Dodds" src="https://bit.ly/kent-c-dodds" />
+                <Avatar
+                    name="Prosper Otemuyiwa"
+                    src="https://bit.ly/prosper-baba"
+                />
+                <Avatar
+                    name="Christian Nwamba"
+                    src="https://bit.ly/code-beast"
+                />
+            </AvatarGroup>
+        </>
+    );
+}
 function GroupDetail() {
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [gridRowHeight, setGridRowHeight] = useState<number>(3);
@@ -177,6 +247,39 @@ function GroupDetail() {
                                     おすすめの活動
                                 </Heading>
                                 <Divider />
+                                <Box>
+                                    <Flex flexDirection="column" p={4}>
+                                        <Flex justify="space-between">
+                                            <Heading size="md">
+                                                10月のゴミ拾い
+                                            </Heading>
+                                            <Tag>ボランティア</Tag>
+                                        </Flex>
+                                        <Text fontSize="sm">
+                                            日時: 11月1日 10:00~13:00
+                                        </Text>
+                                        <Text fontSize="sm">
+                                            場所: 東京都渋谷区
+                                        </Text>
+                                        <Text fontSize="sm">
+                                            詳細:
+                                            <br />
+                                            持ちもの：軍手
+                                            <br />
+                                            集合は〇〇公園ビーチの〇〇駅側から入った所です。
+                                            <br />
+                                            人数が揃っていなくても10時から始めます。遅れる場合ははやめのご連絡をお願いします。
+                                            <br />
+                                            人数とごみの量により終わりの時間が変わることがありますが、一時間半を目安にしています。
+                                        </Text>
+                                        <Text fontSize="sm">
+                                            連絡先: 090-1234-5678
+                                        </Text>
+                                        <ParticipantList />
+                                        <ParticipationButton status={1} />
+                                    </Flex>
+                                    <Divider />
+                                </Box>
                                 {[...Array(3)].map((_, index) => (
                                     <Box key={index}>
                                         <Flex flexDirection="column" p={4}>
@@ -192,8 +295,8 @@ function GroupDetail() {
                                             <Text fontSize="sm">
                                                 場所: 東京都渋谷区
                                             </Text>
-                                            <Text fontSize="sm" noOfLines={4}>
-                                                内容: <br />
+                                            <Text fontSize="sm">
+                                                詳細: <br />
                                                 持ちもの：軍手
                                                 <br />
                                                 集合は〇〇公園ビーチの〇〇駅側から入った所です。
@@ -205,20 +308,8 @@ function GroupDetail() {
                                             <Text fontSize="sm">
                                                 連絡先: 090-1234-5678
                                             </Text>
-                                            <ButtonGroup gap="1" pt={2}>
-                                                <Button
-                                                    size="sm"
-                                                    colorScheme="gray"
-                                                >
-                                                    参加しない
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    colorScheme="teal"
-                                                >
-                                                    参加する
-                                                </Button>
-                                            </ButtonGroup>
+                                            <ParticipantList />
+                                            <ParticipationButton status={0} />
                                         </Flex>
                                         <Divider />
                                     </Box>
