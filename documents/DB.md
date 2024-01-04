@@ -12,6 +12,7 @@
    | interests          | 興味のあるもの             | string    |
    | hobbies            | 趣味                     | string    |
    | selfIntroduction   | 自己紹介                  | string    |
+   | userVec            | ユーザーベクトル           | list      |
 
 2. **groups（グループ）**
 
@@ -48,39 +49,14 @@
    | groupId     | グループID（外部キー）     | integer   |
    | eventId    | イベントID（外部キー）     | integer   |
 
-6. **userVectors**
+6. **userEvents（ユーザー参加イベント）**
 
    | Field Name | Description             | Data Type |
    |------------|-------------------------|-----------|
-   | id         | ユーザーベクトルID（主キー） | integer   |
+   | id         | ユーザーイベントID（主キー） | integer   |
    | userId     | ユーザーID（外部キー）     | integer   |
-   | vector     | ベクトル               | list      |
-
-7. **eventBallots**
-
-   | Field Name | Description             | Data Type |
-   |------------|-------------------------|-----------|
-   | id         | イベント投票ID（主キー）   | integer   |
-   | groupId     | グループID（外部キー）     | integer   |
-   | startDateTime | 開始日時               | datetime  |
-   | endDateTime | 終了日時               | datetime  |
-
-8. **evntBallotChoices**
-
-   | Field Name | Description             | Data Type |
-   |------------|-------------------------|-----------|
-   | id         | 投票選択肢ID（主キー）     | integer   |
-   | eventBallotId   | イベント投票ID（外部キー）   | integer   |
-   | eventId     | イベントID                 | integer   |
-
-9. **userBallots**
-   | Field Name | Description             | Data Type |
-   |------------|-------------------------|-----------|
-   | id         | ユーザー投票ID（主キー）   | integer   |
-   | userId     | ユーザーID（外部キー）     | integer   |
-   | eventBallotId   | イベント投票ID（外部キー）   | integer   |
-   | eventId     | イベントID                 | integer   |
-   | participationStatus | 参加しない(0),参加する(1),未定のステータス(2)         | integer   |
+   | eventId    | イベントID（外部キー）     | integer   |
+   | participationStatus | 参加しない(0),参加する(1)         | integer   |
 
 ~~5. **reviews(振り返り)**~~
 
