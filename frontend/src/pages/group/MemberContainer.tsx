@@ -34,7 +34,7 @@ interface Profile {
 function MemberContainer() {
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const params = useParams();
-    const fetchProfiles = async () => {
+    async function fetchProfiles() {
         try {
             // グループに所属するユーザーのidを取得
             const userGroupsRef = collection(db, 'userGroups');

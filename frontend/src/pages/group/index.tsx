@@ -16,7 +16,7 @@ interface Group {
 
 function GroupList() {
     const [groups, setGroups] = useState<Group[]>([]);
-    const fetchGroups = async () => {
+    async function fetchGroups() {
         const groupsCollection = collection(db, 'groups');
         const groupsSnapshot = await getDocs(groupsCollection);
         const groupLists = groupsSnapshot.docs.map((doc) => {

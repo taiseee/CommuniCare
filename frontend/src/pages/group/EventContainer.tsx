@@ -6,8 +6,7 @@ import {
     where,
     documentId
 } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebaseConfig';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { db } from '@/lib/firebaseConfig';
 import {
     Box,
     GridItem,
@@ -17,107 +16,13 @@ import {
     Skeleton,
     Flex,
     Divider,
-    Button,
-    ButtonGroup,
     Tag,
     TagLabel,
-    TagCloseButton,
-    Avatar,
-    AvatarGroup
+    TagCloseButton
 } from '@chakra-ui/react';
+import ParticipationButton from './ParticipationButton';
+import ParticipantList from './ParticipantList';
 import { useParams } from 'next/navigation';
-interface ParticipationButtonProps {
-    eventId: string;
-}
-function ParticipationButton({ eventId }: ParticipationButtonProps) {
-    const [status, setStatuses] = useState<number>(2);
-    const auth = getAuth();
-    const uid = auth.currentUser?.uid;
-
-    async function fetchStatus() {
-        try {
-            // ユーザーのイベント参加状況を取得
-            const userEventsRef = collection(db, 'userEvents');
-            const userEventsQ = query(
-                userEventsRef,
-                where('userId', '==', uid),
-                where('eventId', '==', eventId)
-            );
-            const userEventsSnapshot = await getDocs(userEventsQ);
-            userEventsSnapshot.forEach((doc) => {
-                setStatuses(doc.data().participationStatus);
-            });
-        } catch (error) {
-            console.error('Error fetching profiles: ', error);
-        }
-    }
-    useEffect(() => {
-        fetchStatus();
-    }, []);
-    return (
-        <>
-            {status === 0 ? (
-                <Box mt={2}>
-                    <Tag borderRadius="full" colorScheme="red">
-                        <TagLabel>不参加</TagLabel>
-                        <TagCloseButton />
-                    </Tag>
-                </Box>
-            ) : status === 1 ? (
-                <Box mt={2}>
-                    <Tag borderRadius="full" colorScheme="teal">
-                        <TagLabel>参加</TagLabel>
-                        <TagCloseButton />
-                    </Tag>
-                </Box>
-            ) : (
-                <Flex flexDirection="column">
-                    <Box mt={2}>
-                        <Tag borderRadius="full">
-                            <TagLabel>未定</TagLabel>
-                        </Tag>
-                    </Box>
-                    <ButtonGroup gap="1" mt={2}>
-                        <Button size="sm" colorScheme="gray">
-                            参加しない
-                        </Button>
-                        <Button size="sm" colorScheme="teal">
-                            参加する
-                        </Button>
-                    </ButtonGroup>
-                </Flex>
-            )}
-        </>
-    );
-}
-
-function ParticipantList() {
-    return (
-        <>
-            <AvatarGroup size="sm" max={4} mt={2}>
-                <Avatar
-                    name="Ryan Florence"
-                    src="https://bit.ly/ryan-florence"
-                    bg="gray.100"
-                    color="black"
-                />
-                <Avatar
-                    name="Segun Adebayo"
-                    src="https://bit.ly/sage-adebayo"
-                />
-                <Avatar name="Kent Dodds" src="https://bit.ly/kent-c-dodds" />
-                <Avatar
-                    name="Prosper Otemuyiwa"
-                    src="https://bit.ly/prosper-baba"
-                />
-                <Avatar
-                    name="Christian Nwamba"
-                    src="https://bit.ly/code-beast"
-                />
-            </AvatarGroup>
-        </>
-    );
-}
 
 interface Event {
     id: string;
@@ -133,7 +38,7 @@ function EventContainer() {
     const [events, setEvents] = useState<Event[]>([]);
     const params = useParams();
 
-    const fetchEvents = async () => {
+    async function fetchEvents() {
         try {
             // グループに推薦されたイベントのidを取得
             const groupEventsRef = collection(db, 'groupEvents');
@@ -261,7 +166,7 @@ function EventContainer() {
                                     <Text fontSize="sm">
                                         連絡先: {event.contact}
                                     </Text>
-                                    <ParticipantList />
+                                    <ParticipantList eventId={event.id} />
                                     <ParticipationButton eventId={event.id} />
                                 </Flex>
                                 <Divider />
