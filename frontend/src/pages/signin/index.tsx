@@ -64,6 +64,7 @@ export default function SignIn() {
                 width="100%"
                 justifyContent="center"
                 alignItems="center"
+                mt={4}
             >
                 <VStack spacing="5">
                     <Heading>ログイン</Heading>
