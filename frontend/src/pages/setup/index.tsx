@@ -57,7 +57,7 @@ export default function Setup() {
     };
 
     return (
-        <Box>
+        <Box mt={4}>
             <Flex
                 flexDirection="column"
                 width="100%"
