@@ -18,3 +18,35 @@ def get_events_from_html(req: https_fn.Request) -> https_fn.Response:
     events = event_extractor.get_events(webtxt)
     print(events)
     return https_fn.Response("success", status=200)
+
+
+from firebase_admin import firestore
+
+@https_fn.on_request(timeout_sec=300)
+def create_group(req: https_fn.Request) -> https_fn.Response:
+    userId = req.args.get('userId') if (req.args and 'userId' in req.args) else ''
+    db = firestore.client()
+
+    # user = db.collection("users").document(userId).get()
+    # userVec = user.to_dict()['userVec']
+
+    # TODO: グループの名前を決める
+    new_group = db.collection("groups").add(
+        {
+            "name": "テストグループ",
+        }
+    )
+
+    # TODO: 今は全ユーザーをグループに追加してるが変更する
+    all_users = db.collection("users").get()
+    all_users_id_list = [user.id for user in all_users]
+    
+    for userId in all_users_id_list:
+        db.collection("userGroups").add(
+            {
+                "userId": userId,
+                "groupId": new_group[1].id,
+            }
+        )
+
+    return https_fn.Response("success", status=200)
