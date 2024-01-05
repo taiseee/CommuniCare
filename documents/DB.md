@@ -13,6 +13,8 @@
    | hobbies            | 趣味                     | string    |
    | selfIntroduction   | 自己紹介                  | string    |
    | userVec            | ユーザーベクトル           | list      |
+   | createdAt          | 作成日時                  | datetime  |
+   | updatedAt          | 更新日時                  | datetime  |
 
 2. **groups（グループ）**
 
@@ -20,6 +22,8 @@
    |------------|-------------------------|-----------|
    | id         | グループID（主キー）       | integer   |
    | name       | グループ名               | string    |
+   | createdAt          | 作成日時                  | datetime  |
+   | updatedAt          | 更新日時                  | datetime  |
 
 3. **userGroups（ユーザーグループ）**
 
@@ -28,6 +32,8 @@
    | id         | ユーザーグループID（主キー） | integer   |
    | userId     | ユーザーID（外部キー）     | integer   |
    | groupId    | グループID（外部キー）     | integer   |
+   | createdAt          | 作成日時                  | datetime  |
+   | updatedAt          | 更新日時                  | datetime  |
 
 4. **events（イベント）**
 
@@ -40,6 +46,8 @@
    | dateTime       | 開始日時               | datetime  |
    | category       | カテゴリ               | string    |
    | contact        | 連絡先                 | string    |
+   | createdAt          | 作成日時                  | datetime  |
+   | updatedAt          | 更新日時                  | datetime  |
 
 5. **groupEvents（ユーザー参加イベント）**
 
@@ -48,6 +56,8 @@
    | id         | ユーザーイベントID（主キー） | integer   |
    | groupId     | グループID（外部キー）     | integer   |
    | eventId    | イベントID（外部キー）     | integer   |
+   | createdAt          | 作成日時                  | datetime  |
+   | updatedAt          | 更新日時                  | datetime  |
 
 6. **userEvents（ユーザー参加イベント）**
 
@@ -57,6 +67,8 @@
    | userId     | ユーザーID（外部キー）     | integer   |
    | eventId    | イベントID（外部キー）     | integer   |
    | participationStatus | 参加しない(0),参加する(1)         | integer   |
+   | createdAt          | 作成日時                  | datetime  |
+   | updatedAt          | 更新日時                  | datetime  |
 
 ~~5. **reviews(振り返り)**~~
 
