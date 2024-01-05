@@ -100,6 +100,7 @@ function MenuLinks({ isOpen }: MenuLinksProps): React.ReactNode {
                 pt={[4, 4, 0, 0]}
             >
                 <MenuItem to="/">ホーム</MenuItem>
+                <MenuItem to="/setup">ユーザ情報登録</MenuItem>
                 <MenuItem to="/search">検索</MenuItem>
                 <MenuItem to="/group">グループ</MenuItem>
                 <MenuItem to="/signin">
