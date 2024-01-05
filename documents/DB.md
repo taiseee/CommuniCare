@@ -4,7 +4,7 @@
 
    | Field Name         | Description             | Data Type |
    |--------------------|-------------------------|-----------|
-   | id                 | ユーザーID（主キー）       | integer   |
+   | id                 | ユーザーID（主キー）       | string    |
    | UID                | UID                     | string    |
    | name               | 名前                     | string    |
    | age                | 年齢                     | integer   |
@@ -20,7 +20,7 @@
 
    | Field Name | Description             | Data Type |
    |------------|-------------------------|-----------|
-   | id         | グループID（主キー）       | integer   |
+   | id         | グループID（主キー）       | string   |
    | name       | グループ名               | string    |
    | createdAt          | 作成日時                  | datetime  |
    | updatedAt          | 更新日時                  | datetime  |
@@ -29,9 +29,9 @@
 
    | Field Name | Description             | Data Type |
    |------------|-------------------------|-----------|
-   | id         | ユーザーグループID（主キー） | integer   |
-   | userId     | ユーザーID（外部キー）     | integer   |
-   | groupId    | グループID（外部キー）     | integer   |
+   | id         | ユーザーグループID（主キー） | string   |
+   | userId     | ユーザーID（外部キー）     | string   |
+   | groupId    | グループID（外部キー）     | string   |
    | createdAt          | 作成日時                  | datetime  |
    | updatedAt          | 更新日時                  | datetime  |
 
@@ -39,7 +39,7 @@
 
    | Field Name     | Description             | Data Type |
    |----------------|-------------------------|-----------|
-   | id             | イベントID（主キー）     | integer   |
+   | id             | イベントID（主キー）     | string   |
    | title          | タイトル               | string    |
    | description    | 説明                   | string    |
    | location       | 場所                   | string    |
@@ -53,9 +53,9 @@
 
    | Field Name | Description             | Data Type |
    |------------|-------------------------|-----------|
-   | id         | ユーザーイベントID（主キー） | integer   |
-   | groupId     | グループID（外部キー）     | integer   |
-   | eventId    | イベントID（外部キー）     | integer   |
+   | id         | ユーザーイベントID（主キー） | string   |
+   | groupId     | グループID（外部キー）     | string   |
+   | eventId    | イベントID（外部キー）     | string   |
    | createdAt          | 作成日時                  | datetime  |
    | updatedAt          | 更新日時                  | datetime  |
 
@@ -63,9 +63,9 @@
 
    | Field Name | Description             | Data Type |
    |------------|-------------------------|-----------|
-   | id         | ユーザーイベントID（主キー） | integer   |
-   | userId     | ユーザーID（外部キー）     | integer   |
-   | eventId    | イベントID（外部キー）     | integer   |
+   | id         | ユーザーイベントID（主キー） | string   |
+   | userId     | ユーザーID（外部キー）     | string   |
+   | eventId    | イベントID（外部キー）     | string   |
    | participationStatus | 参加しない(0),参加する(1)         | integer   |
    | createdAt          | 作成日時                  | datetime  |
    | updatedAt          | 更新日時                  | datetime  |
