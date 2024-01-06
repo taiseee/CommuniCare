@@ -51,6 +51,11 @@ function EventContainer() {
                 (doc) => doc.data().eventId
             );
 
+            // イベントがない場合はここで終了
+            if (eventIds.length === 0) {
+                return;
+            }
+
             // イベントのデータを取得
             const eventsRef = collection(db, 'events');
             const eventsQ = query(
