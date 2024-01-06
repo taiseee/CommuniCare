@@ -1,5 +1,8 @@
 from firebase_functions import https_fn
+from firebase_admin import firestore
 from langchain.document_loaders import PyPDFLoader
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 from .service import EventExtractor, get_webtxt
 
 @https_fn.on_request(timeout_sec=300)
@@ -19,34 +22,45 @@ def get_events_from_html(req: https_fn.Request) -> https_fn.Response:
     print(events)
     return https_fn.Response("success", status=200)
 
-
-from firebase_admin import firestore
-
 @https_fn.on_request(timeout_sec=300)
 def create_group(req: https_fn.Request) -> https_fn.Response:
-    userId = req.args.get('userId') if (req.args and 'userId' in req.args) else ''
-    db = firestore.client()
 
-    # user = db.collection("users").document(userId).get()
-    # userVec = user.to_dict()['userVec']
+    if req.args and 'userId' in req.args:
+        userId = req.args.get('userId')
+        db = firestore.client()
+        user = db.collection("users").document(userId).get()
 
-    # TODO: グループの名前を決める
-    new_group = db.collection("groups").add(
-        {
-            "name": "テストグループ",
-        }
-    )
+        if not user.exists:
+            return https_fn.Response("user not found", status=404)
 
-    # TODO: 今は全ユーザーをグループに追加してるが変更する
-    all_users = db.collection("users").get()
-    all_users_id_list = [user.id for user in all_users]
-    
-    for userId in all_users_id_list:
-        db.collection("userGroups").add(
+
+        all_users = db.collection("users").get()
+        all_users_list = [user for user in all_users]
+
+        userVec = np.array(user.to_dict()['userVec'])
+        all_userVecs = np.array([user.to_dict()['userVec'] for user in all_users_list])
+
+        cos_sim = cosine_similarity(userVec.reshape(1, -1), all_userVecs)
+
+        top5_users_index = np.argsort(cos_sim[0])[-5:]
+
+        top5_users = [all_users_list[i] for i in top5_users_index]
+
+        new_group_name = ' '.join([user.to_dict()['name'] for user in top5_users])
+        new_group = db.collection("groups").add(
             {
-                "userId": userId,
-                "groupId": new_group[1].id,
+                "name": new_group_name,
             }
         )
+        
+        for user in top5_users:
+            db.collection("userGroups").add(
+                {
+                    "userId": user.id,
+                    "groupId": new_group[1].id,
+                }
+            )
+    else:
+        return https_fn.Response("userId is required", status=400)
 
     return https_fn.Response("success", status=200)
