@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebaseConfig'; // あなたのFirebase設定ファイルへのパス
 import {
-    Heading,
-    Card,
-    CardHeader,
-    Flex
-} from '@chakra-ui/react';
+    collection,
+    getDocs,
+    query,
+    where,
+    documentId
+} from 'firebase/firestore';
+import { db } from '@/lib/firebaseConfig'; // あなたのFirebase設定ファイルへのパス
+import { getAuth } from 'firebase/auth';
+import { Heading, Card, CardHeader, Flex } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 interface Group {
@@ -16,14 +18,31 @@ interface Group {
 
 function GroupList() {
     const [groups, setGroups] = useState<Group[]>([]);
+    const auth = getAuth();
+    const uid = auth.currentUser?.uid;
     async function fetchGroups() {
-        const groupsCollection = collection(db, 'groups');
-        const groupsSnapshot = await getDocs(groupsCollection);
+        // ユーザーが所属するグループのidを取得
+        const userGroupsRef = collection(db, 'userGroups');
+        const userGroupsQ = query(userGroupsRef, where('userId', '==', uid));
+        const userGroupsSnapshot = await getDocs(userGroupsQ);
+        const groupIds = userGroupsSnapshot.docs.map(
+            (doc) => doc.data().groupId
+        );
+
+        // 所属グループがない場合はここで終了
+        if (groupIds.length === 0) {
+            return;
+        }
+
+        // グループのデータを取得
+        const groupsRef = collection(db, 'groups');
+        const groupsQ = query(groupsRef, where(documentId(), 'in', groupIds));
+        const groupsSnapshot = await getDocs(groupsQ);
         const groupLists = groupsSnapshot.docs.map((doc) => {
             return { ...(doc.data() as Group), id: doc.id };
         });
         setGroups(groupLists);
-    };
+    }
     useEffect(() => {
         fetchGroups();
     }, []);
@@ -32,7 +51,13 @@ function GroupList() {
         <Flex flexDir="column" m={4}>
             <Heading size="lg">所属グループ</Heading>
             {groups.map((group) => (
-                <Card key={group.id} mt={4} _hover={{ bg: 'gray.100' }} as={NextLink} href={`/group/${group.id}`}>
+                <Card
+                    key={group.id}
+                    mt={4}
+                    _hover={{ bg: 'gray.100' }}
+                    as={NextLink}
+                    href={`/group/${group.id}`}
+                >
                     <CardHeader>
                         <Heading size="md">{group.name}</Heading>
                     </CardHeader>
