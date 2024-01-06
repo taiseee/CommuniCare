@@ -3,7 +3,11 @@ from firebase_admin import firestore
 from langchain.document_loaders import PyPDFLoader
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-from .service import EventExtractor, get_webtxt
+from .service import EventExtractor, get_webtxt, first_recommend_events
+from firebase_admin import firestore
+import random
+import os
+from google.cloud.firestore_v1.transaction import Transaction
 
 @https_fn.on_request(timeout_sec=300)
 def get_events_from_pdf(req: https_fn.Request) -> https_fn.Response:
@@ -60,6 +64,9 @@ def create_group(req: https_fn.Request) -> https_fn.Response:
                     "groupId": new_group[1].id,
                 }
             )
+        
+        # 作成されたグループにイベントをレコメンドする
+        first_recommend_events(new_group[1].id)
     else:
         return https_fn.Response("userId is required", status=400)
 
