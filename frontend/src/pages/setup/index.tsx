@@ -47,9 +47,24 @@ export default function Setup() {
 
         const userDoc = { ...data, userVec, age, gender };
 
+        const apiURL = 'http://127.0.0.1:5001/communicare-57fed/us-central1/create_group';
+
         return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true })
             .then(() => {
-                router.push('/');
+                fetch(apiURL + `?userId=${data.uid}`, {
+                    method: 'GET',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then((response) => {
+                    router.push('/');
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
             })
             .catch((error) => {
                 console.log(error);
