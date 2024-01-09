@@ -145,7 +145,6 @@ function MenuLinks({ isOpen }: MenuLinksProps): React.ReactNode {
             >
                 <MenuItem to="/">ホーム</MenuItem>
                 <MenuItem to="/setup">ユーザ情報登録</MenuItem>
-                <MenuItem to="/search">検索</MenuItem>
                 <MenuItem to="/group">グループ</MenuItem>
                 <AuthButton />
             </Stack>
