@@ -19,6 +19,7 @@ export function AuthGurad({ children }: { children: ReactNode }) {
 
     if (
         user === null &&
+        router.pathname !== '/' &&
         router.pathname !== '/signin' &&
         router.pathname !== '/signup'
     ) {
