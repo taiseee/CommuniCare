@@ -1,4 +1,4 @@
-from firebase_functions import https_fn
+from firebase_functions import https_fn, options
 from firebase_admin import firestore
 from langchain.document_loaders import PyPDFLoader
 from sklearn.metrics.pairwise import cosine_similarity
@@ -26,25 +26,31 @@ def get_events_from_html(req: https_fn.Request) -> https_fn.Response:
     print(events)
     return https_fn.Response("success", status=200)
 
-@https_fn.on_request(timeout_sec=300)
-def create_group(req: https_fn.Request) -> https_fn.Response:
-
-    if req.args and 'userId' in req.args:
-        userId = req.args.get('userId')
+@https_fn.on_call(
+        memory=512,
+        timeout_sec=300,
+        cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
+    )
+def create_group(req: https_fn.CallableRequest):
+    if req.data['userId']:
+        userId = req.data['userId']
         db = firestore.client()
         user = db.collection("users").document(userId).get()
 
         if not user.exists:
-            return https_fn.Response("user not found", status=404)
-
+            return {"message": "user not found"}
 
         all_users = db.collection("users").get()
         all_users_list = [user for user in all_users]
 
         userVec = np.array(user.to_dict()['userVec'])
         all_userVecs = np.array([user.to_dict()['userVec'] for user in all_users_list])
+        if len(all_userVecs) == 0:
+            return {"message": "No users found"}
 
         cos_sim = cosine_similarity(userVec.reshape(1, -1), all_userVecs)
+        if len(cos_sim[0]) < 5:
+            return {"message": "Not enough users for comparison"}
 
         top5_users_index = np.argsort(cos_sim[0])[-5:]
 
@@ -68,6 +74,6 @@ def create_group(req: https_fn.Request) -> https_fn.Response:
         # 作成されたグループにイベントをレコメンドする
         first_recommend_events(new_group[1].id)
     else:
-        return https_fn.Response("userId is required", status=400)
+        return {"message": "userId is required"}
 
-    return https_fn.Response("success", status=200)
+    return {"message": "success"}
