@@ -15,7 +15,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebaseConfig';
+import { httpsCallable } from 'firebase/functions';
+import { db, functions } from '@/lib/firebaseConfig';
 import { getEmbedding } from '@/lib/getEmbedding';
 import { useAuthContext } from '@/provider/AuthProvider';
 
@@ -32,6 +33,7 @@ type formInputs = {
 export default function Setup() {
     const router = useRouter();
     const { user } = useAuthContext();
+    const createGroup = httpsCallable(functions, 'create_group');
     const { handleSubmit, register, formState } = useForm<formInputs>();
     const { errors, isSubmitting } = formState;
 
@@ -47,24 +49,16 @@ export default function Setup() {
 
         const userDoc = { ...data, userVec, age, gender };
 
-        const apiURL = 'http://127.0.0.1:5001/communicare-57fed/us-central1/create_group';
-
         return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true })
             .then(() => {
-                fetch(apiURL + `?userId=${data.uid}`, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then((response) => {
-                    router.push('/');
-                    console.log(response);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+                createGroup({ userId: data.uid })
+                    .then((res) => {
+                        router.push('/');
+                        console.log(res.data);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
             })
             .catch((error) => {
                 console.log(error);
