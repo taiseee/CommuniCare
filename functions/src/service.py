@@ -42,9 +42,15 @@ def regular_execution_recommend_events():
     for event in events:
         event_ids.append(event.id)
 
+    if len(event_ids) == 0:
+        return
+
     groups = db.collection('groups').get()
 
     group_events_ref = db.collection('groupEvents')
+
+    if len(groups) == 0:
+        return
 
     for group in groups:
         group_id = group.id
@@ -66,6 +72,9 @@ def first_recommend_events(group_id: str):
     event_ids = []
     for event in events:
         event_ids.append(event.id)
+
+    if len(event_ids) == 0:
+        return
 
     group_events_ref = db.collection('groupEvents')
 
