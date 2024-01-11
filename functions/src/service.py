@@ -5,13 +5,14 @@ from langchain.output_parsers import PydanticOutputParser
 from .schema import EventList
 from firebase_admin import firestore
 import random
+import json
 
 class EventExtractor:
     def __init__(self, model="gpt-3.5-turbo-1106"):
         self.client = OpenAI()
         self.model = model
 
-    def get_events(self, text):
+    def get_events(self, text) -> dict:
         parser = PydanticOutputParser(pydantic_object=EventList)
         res = self.client.chat.completions.create(
             model=self.model,
@@ -25,13 +26,13 @@ class EventExtractor:
             ]
         )
         events = res.choices[0].message.content
-        return events
+        return json.loads(events)["events"]
 
-def get_webtxt(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    webtxt = soup.get_text()
-    return webtxt
+    def get_webtxt(self, url):
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        webtxt = soup.get_text()
+        return webtxt
 
 def regular_execution_recommend_events():
     db = firestore.client()
