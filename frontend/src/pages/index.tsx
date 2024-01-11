@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import NextLink from 'next/link';
 import {
     Box,
