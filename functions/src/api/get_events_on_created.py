@@ -32,6 +32,7 @@ def get_events_on_created(event_on_created: Event[DocumentSnapshot | None]) -> N
                 "dateTime": event.get("dateTime"),
                 "location": event.get("location"),
                 "description": event.get("description"),
+                "url": event_url,
                 "contact": event.get("contact"),
                 "createdAt": firestore.SERVER_TIMESTAMP,
                 "updatedAt": firestore.SERVER_TIMESTAMP,
