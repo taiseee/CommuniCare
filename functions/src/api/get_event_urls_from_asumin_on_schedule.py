@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 @scheduler_fn.on_schedule(
-    schedule="every day 21:40",
+    schedule="every day 23:59",
     timezone=scheduler_fn.Timezone("Asia/Tokyo"),
     memory=512,
 )
