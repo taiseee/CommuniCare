@@ -1,4 +1,5 @@
 import { useState, useEffect, use } from 'react';
+import NextLink from 'next/link';
 import {
     Box,
     Heading,
@@ -95,7 +96,7 @@ export default function Home() {
 function EventListItem({ event }: { event: EventListItem }) {
     const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
     return (
-        <Box key={event.eventId}>
+        <Box key={event.eventId} as={NextLink} href={`/${event.eventId}`} _hover={{ "& .underlineOnHover": { textDecoration: "underline" } }}>
             <Box pb={2}>
                 <Flex py={1}>
                     <Box>
@@ -111,7 +112,7 @@ function EventListItem({ event }: { event: EventListItem }) {
                         {event.updatedAt.toDate().toLocaleDateString()}
                     </Text>
                 </Flex>
-                <Text fontSize='lg' fontWeight={'bold'} py={1}>
+                <Text fontSize='lg' fontWeight={'bold'} py={1} className="underlineOnHover">
                     {event.title}
                 </Text>
                 <Flex py={1} direction={isSmallerThan480 ? "column" : "row"}>
