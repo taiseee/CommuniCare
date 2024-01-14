@@ -98,7 +98,7 @@ export default function EventDetail() {
     }, [eventId]);
 
     return (
-        <Box mt={4} mx={5} px={5}>
+        <Box mt={4} mx={5} px={isSmallerThan480? 0 : 5}>
             <Grid templateColumns={isSmallerThan480 ? "1fr" : "3fr 1fr"} gap={6}>
                 <Card>
                     <CardHeader>
