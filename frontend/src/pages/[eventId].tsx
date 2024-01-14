@@ -4,6 +4,7 @@ import NextLink from 'next/link';
 import {
     Box,
     Text,
+    Link,
     Heading,
     Grid,
     Flex,
@@ -18,6 +19,7 @@ import {
     Td,
     useMediaQuery
 } from '@chakra-ui/react';
+import { ExternalLinkIcon } from '@chakra-ui/icons'
 import {
     collection,
     getDocs,
@@ -36,6 +38,7 @@ interface EventDetail {
     dateTime: string;
     location: string;
     description: string;
+    url: string;
     contact: string;
     createdAt: Timestamp;
     updatedAt: Timestamp;
@@ -130,6 +133,14 @@ export default function EventDetail() {
                                 <Tr>
                                     <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>連絡先</Td>
                                     <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.contact}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>URL</Td>
+                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>
+                                        <Link href={event?.url} target="_blank" color="teal.500" isExternal>
+                                            {event?.url}<ExternalLinkIcon mx='2px' />
+                                        </Link>
+                                    </Td>
                                 </Tr>
                             </Tbody>
                         </Table>
