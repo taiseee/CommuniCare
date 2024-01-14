@@ -21,11 +21,11 @@ import {
     query,
     where,
     documentId,
-    Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import EventListItem from '@/components/EventListItem';
 import EventListSkeletonItem from '@/components/EventListSkeletonItem';
+import { EventListItem as EventListItemType } from '@/types';
 
 interface UserDetail {
     userId: string;
@@ -37,31 +37,11 @@ interface UserDetail {
     selfIntroduction: string;
 };
 
-interface ParticipateEvent {
-    eventId: string;
-    title: string;
-    host: string;
-    category: boolean;
-    location: string;
-    updatedAt: Timestamp;
-    participantsNum: number;
-};
-
-interface EventListItem {
-    eventId: string;
-    title: string;
-    host: string;
-    category: boolean;
-    location: string;
-    updatedAt: Timestamp;
-    participantsNum: number;
-}
-
 export default function UserDetail() {
     const router = useRouter();
     const { userId } = router.query;
     const [user, setUser] = useState<UserDetail>();
-    const [participateEvents, setParticipateEvents] = useState<ParticipateEvent[]>([]);
+    const [participateEvents, setParticipateEvents] = useState<EventListItemType[]>([]);
     const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
 
     async function getUserDetail(userId: string): Promise<UserDetail> {
@@ -72,7 +52,7 @@ export default function UserDetail() {
         return user;
     };
 
-    async function getPaticipateEvents(userId: string): Promise<ParticipateEvent[]> {
+    async function getPaticipateEvents(userId: string): Promise<EventListItemType[]> {
         const userEventsRef = collection(db, 'userEvents');
         const userEventsQ = query(userEventsRef, where('userId', '==', userId), where('participationStatus', '==', 1));
         const userEventsSnapshot = await getDocs(userEventsQ);
@@ -84,7 +64,7 @@ export default function UserDetail() {
                 const eventSnapshot = await getDocs(eventQ);
                 const event = eventSnapshot.docs[0].data();
                 const participantsNum = await getPaticipantsNum(eventId);
-                return { eventId, ...event, participantsNum } as ParticipateEvent;
+                return { eventId, ...event, participantsNum } as EventListItemType;
             })
         );
         return participantEvents;
@@ -158,7 +138,7 @@ export default function UserDetail() {
                     <Box pt={2} px={2}>
                         {
                             participateEvents.length !== 0 ? (
-                                participateEvents.map((participateEvent: EventListItem) => {
+                                participateEvents.map((participateEvent: EventListItemType) => {
                                     return (
                                         <EventListItem key={participateEvent.eventId} event={participateEvent} />
                                     );
