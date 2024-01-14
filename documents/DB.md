@@ -44,12 +44,21 @@
    | description    | 説明                   | string    |
    | location       | 場所                   | string    |
    | dateTime       | 開始日時               | datetime  |
-   | category       | カテゴリ               | string    |
+   | category       | カテゴリ(1ボランティア、0はそれ以外の地域活動)               | bool    |
+   | url            | URL                    | string    |
    | contact        | 連絡先                 | string    |
    | createdAt          | 作成日時                  | datetime  |
    | updatedAt          | 更新日時                  | datetime  |
 
-5. **groupEvents（ユーザー参加イベント）**
+5. **eventUrls**
+      | Field Name | Description             | Data Type |
+      |------------|-------------------------|-----------|
+      | id         | イベントURLID（主キー）   | string   |
+      | url        | URL                     | string    |
+      | createdAt          | 作成日時                  | datetime  |
+      | updatedAt          | 更新日時                  | datetime  |
+
+6. **groupEvents（ユーザー参加イベント）**
 
    | Field Name | Description             | Data Type |
    |------------|-------------------------|-----------|
@@ -59,7 +68,7 @@
    | createdAt          | 作成日時                  | datetime  |
    | updatedAt          | 更新日時                  | datetime  |
 
-6. **userEvents（ユーザー参加イベント）**
+7. **userEvents（ユーザー参加イベント）**
 
    | Field Name | Description             | Data Type |
    |------------|-------------------------|-----------|
