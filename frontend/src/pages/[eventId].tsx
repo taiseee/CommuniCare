@@ -5,10 +5,18 @@ import {
     Box,
     Text,
     Heading,
+    Grid,
+    Flex,
+    Avatar,
     Card,
     CardHeader,
     CardBody,
-    CardFooter,
+    Badge,
+    Table,
+    Tbody,
+    Tr,
+    Td,
+    useMediaQuery
 } from '@chakra-ui/react';
 import {
     collection,
@@ -40,6 +48,7 @@ interface eventPatipant {
 
 export default function EventDetail() {
     const router = useRouter();
+    const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
     const [event, setEvent] = useState<EventDetail>();
     const [participants, setParticipants] = useState<eventPatipant[]>([]);
     const { eventId } = router.query;
@@ -90,6 +99,77 @@ export default function EventDetail() {
 
     return (
         <Box mt={4} mx={5} px={5}>
+            <Grid templateColumns={isSmallerThan480 ? "1fr" : "3fr 1fr"} gap={6}>
+                <Card>
+                    <CardHeader>
+                        <Box mb={2}>
+                            {event?.category ?
+                                <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
+                                :
+                                <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
+                            }
+                        </Box>
+                        <Heading size='lg' mb={2}>{event?.title}</Heading>
+                        <Text color='grey'>主催: {event?.host}</Text>
+                    </CardHeader>
+                    <CardBody>
+                        <Table variant="simple">
+                            <Tbody>
+                                <Tr>
+                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>開催場所</Td>
+                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.location}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>開催日時</Td>
+                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.dateTime}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>詳細</Td>
+                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.description}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>連絡先</Td>
+                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.contact}</Td>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </CardBody>
+                </Card>
+                <Box>
+                    {/* 参加申し込み(個人)いるかな？ */}
+                    <Card>
+                        <CardHeader pb={0}>
+                            <Heading size='md'>参加者({participants?.length} 人)</Heading>
+                        </CardHeader>
+                        <CardBody>
+                            <Table variant="simple">
+                                <Tbody>
+                                    {participants?.map((participant) => {
+                                        return (
+                                            <Tr key={participant.userId}>
+                                                <Td py={2} _hover={{ "& .underlineOnHover": { textDecoration: "underline" } }}>
+                                                    <NextLink href={`/user/${participant.userId}`}>
+                                                        <Flex alignItems='center'>
+                                                            <Avatar
+                                                                name={participant.name}
+                                                                bg="gray.100"
+                                                                color="black"
+                                                                size="sm"
+                                                                mr={2}
+                                                            />
+                                                            <Text className="underlineOnHover">{participant.name}</Text>
+                                                        </Flex>
+                                                    </NextLink>
+                                                </Td>
+                                            </Tr>
+                                        );
+                                    })}
+                                </Tbody>
+                            </Table>
+                        </CardBody>
+                    </Card>
+                </Box>
+            </Grid>
         </Box>
     );
 }
