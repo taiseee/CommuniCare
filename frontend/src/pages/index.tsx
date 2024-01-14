@@ -11,7 +11,6 @@ import {
     orderBy,
     where,
     getDocs,
-    Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import EventListItem from '@/components/EventListItem';

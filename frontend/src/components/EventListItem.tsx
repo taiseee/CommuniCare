@@ -1,6 +1,5 @@
 import NextLink from "next/link";
 import { Box, Badge, Flex, Spacer, Text, Divider, useMediaQuery } from "@chakra-ui/react";
-import { Timestamp } from "firebase/firestore";
 import { EventListItem } from "@/types";
 
 export default function EventListItem({ event }: { event: EventListItem }) {
