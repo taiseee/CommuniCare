@@ -60,7 +60,6 @@ export default function Home() {
     useEffect(() => {
         getSortedEvents()
             .then(events => {
-                console.log(events);
                 setEvents(events);
             })
             .catch(error => {
@@ -77,7 +76,7 @@ export default function Home() {
                     events.length !== 0 ? (
                         events.map((event: EventListItem) => {
                             return (
-                                <EventListItem event={event} />
+                                <EventListItem key={event.eventId} event={event} />
                             );
                         })
                     ) : (
@@ -96,7 +95,7 @@ export default function Home() {
 function EventListItem({ event }: { event: EventListItem }) {
     const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
     return (
-        <Box key={event.eventId} as={NextLink} href={`/${event.eventId}`} _hover={{ "& .underlineOnHover": { textDecoration: "underline" } }}>
+        <Box as={NextLink} href={`/${event.eventId}`} _hover={{ "& .underlineOnHover": { textDecoration: "underline" } }}>
             <Box pb={2}>
                 <Flex py={1}>
                     <Box>
