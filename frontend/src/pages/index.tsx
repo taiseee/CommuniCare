@@ -16,22 +16,13 @@ import {
 import { db } from '@/lib/firebaseConfig';
 import EventListItem from '@/components/EventListItem';
 import EventListSkeletonItem from '@/components/EventListSkeletonItem';
-
-interface EventListItem {
-    eventId: string;
-    title: string;
-    host: string;
-    category: boolean;
-    location: string;
-    updatedAt: Timestamp;
-    participantsNum: number;
-}
+import { EventListItem as EventListItemType } from '@/types';
 
 export default function Home() {
-    const [events, setEvents] = useState<EventListItem[]>([]);
+    const [events, setEvents] = useState<EventListItemType[]>([]);
     const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
 
-    async function getSortedEvents(): Promise<EventListItem[]> {
+    async function getSortedEvents(): Promise<EventListItemType[]> {
         const eventsRef = collection(db, 'events');
         const eventsQ = query(eventsRef, orderBy('updatedAt', 'desc'));
         const eventsSnapshot = await getDocs(eventsQ);
@@ -40,7 +31,7 @@ export default function Home() {
                 const eventId = doc.id;
                 const eventData = doc.data();
                 const participantsNum = await getPaticipantsNum(eventId);
-                return { eventId, ...eventData, participantsNum } as EventListItem;
+                return { eventId, ...eventData, participantsNum } as EventListItemType;
             })
         );
         return events;
@@ -71,7 +62,7 @@ export default function Home() {
             <Box pt={2} px={2}>
                 {
                     events.length !== 0 ? (
-                        events.map((event: EventListItem) => {
+                        events.map((event: EventListItemType) => {
                             return (
                                 <EventListItem key={event.eventId} event={event} />
                             );
