@@ -1,16 +1,7 @@
 import NextLink from "next/link";
 import { Box, Badge, Flex, Spacer, Text, Divider, useMediaQuery } from "@chakra-ui/react";
 import { Timestamp } from "firebase/firestore";
-
-interface EventListItem {
-    eventId: string;
-    title: string;
-    host: string;
-    category: boolean;
-    location: string;
-    updatedAt: Timestamp;
-    participantsNum: number;
-}
+import { EventListItem } from "@/types";
 
 export default function EventListItem({ event }: { event: EventListItem }) {
     const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
