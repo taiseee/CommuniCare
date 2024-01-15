@@ -74,7 +74,7 @@ function EventContainer() {
         } catch (error) {
             console.error('Error fetching events: ', error);
         }
-    };
+    }
 
     useEffect(() => {
         fetchEvents();
