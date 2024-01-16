@@ -9,6 +9,7 @@ import {
     Grid,
     Flex,
     Avatar,
+    Button,
     Card,
     CardHeader,
     CardBody,
@@ -29,6 +30,8 @@ import {
     Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
+import { useAuthContext } from '@/provider/AuthProvider';
+import ParticipationButton from '@/pages/group/ParticipationButton';
 
 interface EventDetail {
     eventId: string;
@@ -51,6 +54,7 @@ interface eventPatipant {
 
 export default function EventDetail() {
     const router = useRouter();
+    const { user } = useAuthContext();
     const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
     const [event, setEvent] = useState<EventDetail>();
     const [participants, setParticipants] = useState<eventPatipant[]>([]);
@@ -147,7 +151,31 @@ export default function EventDetail() {
                     </CardBody>
                 </Card>
                 <Box>
-                    {/* 参加申し込み(個人)いるかな？ */}
+                    <Card mb={5}>
+                        <CardHeader pb={0}>
+                            <Heading size='md'>参加申し込み</Heading>
+                        </CardHeader>
+                        <CardBody>
+                            {user ?
+                                <ParticipationButton eventId={eventId as string} />
+                                :
+                                <>
+                                    <Flex justifyContent='center' mb={2}>
+                                        <Text textAlign='center'>
+                                            参加申し込みには
+                                            <br />
+                                            ログインが必要です
+                                        </Text>
+                                    </Flex>
+                                    <Flex justifyContent='center'>
+                                        <Button colorScheme='teal' as={NextLink} href='/signin'>
+                                            ログインする
+                                        </Button>
+                                    </Flex>
+                                </>
+                            }
+                        </CardBody>
+                    </Card>
                     <Card>
                         <CardHeader pb={0}>
                             <Heading size='md'>参加者({participants?.length} 人)</Heading>
