@@ -1,87 +1,91 @@
 import {
     getAuth,
     GoogleAuthProvider,
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged,
     Auth,
     AuthProvider
 } from 'firebase/auth';
 import {
-    getFirestore,
     collection,
     addDoc,
     query,
     orderBy,
-    limit,
     onSnapshot,
     serverTimestamp,
     doc,
-    setDoc,
-    updateDoc,
     deleteDoc,
     getDocs,
     CollectionReference,
-    DocumentData,
     Timestamp,
-    startAt,
-    startAfter
+    where,
+    documentId
 } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
-import {
-    getStorage,
-    FirebaseStorage
-} from 'firebase/storage';
-
-interface TextMessage {
-    text: string;
-    timestamp: Timestamp;
-    uid: string;
-}
-
-interface ImageMessage {
-    imageUrl: string;
-    timestamp: Timestamp;
-    uid: string;
-}
+import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { useParams } from 'next/navigation';
 
 export interface Message {
     id: string;
-    text?: string;
-    imageUrl?: string;
+    text: string;
     timestamp: Timestamp;
     uid: string;
+    profile: Profile | undefined;
 }
 
 interface ChangedData {
     type: string;
     newIndex: number;
     oldIndex: number;
-    data: Message;
+    message: Message;
 }
 
+// プロフィールの型定義
+export interface Profile {
+    id: string;
+    name: string;
+    age: number;
+    gender: number;
+    interests: string;
+    hobbies: string;
+    selfIntroduction: string;
+}
 class ChatService {
     auth: Auth = getAuth();
     storage: FirebaseStorage = getStorage();
     provider: AuthProvider = new GoogleAuthProvider();
-    messages_ref: CollectionReference = collection(db, 'messages');
-    // InitMessageMax = 10;
-    // FetchMessageMax = 10;
+    groupId: string = useParams().groupId;
+    messagesRef: CollectionReference = collection(
+        db,
+        'groups',
+        this.groupId,
+        'messages'
+    );
+    members: Profile[] = [];
 
-    // async init(
-    //     setObserveFrom: React.Dispatch<
-    //         React.SetStateAction<DocumentData | null>
-    //     >
-    // ) {
-    //     const q = query(
-    //         this.messages_ref,
-    //         orderBy('timestamp', 'desc'),
-    //         limit(this.InitMessageMax)
-    //     );
-    //     const docs = (await getDocs(q)).docs;
-    //     const oldestMessage = docs[docs.length - 1];
-    //     setObserveFrom(oldestMessage);
-    // }
+
+    async fetchMembers(setMembers: React.Dispatch<React.SetStateAction<Profile[]>>) {
+        // グループに所属するユーザーのidを取得
+        const userGroupsRef = collection(db, 'userGroups');
+        const userGroupsQ = query(
+            userGroupsRef,
+            where('groupId', '==', this.groupId)
+        );
+        const userGroupsSnapshot = await getDocs(userGroupsQ);
+        const userIds = userGroupsSnapshot.docs.map((doc) => doc.data().userId);
+
+        // ユーザーのプロフィールを取得
+        const usersRef = collection(db, 'users');
+        const usersQ = query(usersRef, where(documentId(), 'in', userIds));
+        const usersSnapshot = await getDocs(usersQ);
+        const members: Profile[] = [];
+        usersSnapshot.forEach((doc) => {
+            members.push({
+                ...doc.data(),
+                id: doc.id
+            } as Profile);
+        });
+        setMembers(members);
+        console.log("init");
+    }
 
     async addMessage(textMessage: string | null, imageUrl: string | null) {
         let data: any;
@@ -93,16 +97,8 @@ class ChatService {
 
         try {
             if (textMessage && textMessage.length > 0) {
-                console.log('added textMessage');
-                data = await addDoc(this.messages_ref, {
+                data = await addDoc(this.messagesRef, {
                     text: textMessage,
-                    timestamp: serverTimestamp(),
-                    uid: user.uid
-                });
-            } else if (imageUrl && imageUrl.length > 0) {
-                console.log('added imageaurlMessage');
-                data = await addDoc(this.messages_ref, {
-                    imageUrl: imageUrl,
                     timestamp: serverTimestamp(),
                     uid: user.uid
                 });
@@ -128,13 +124,11 @@ class ChatService {
 
     createListener(
         setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
-        // observeFrom: DocumentData | null
+        members: Profile[]
     ) {
-        console.log('createListener');
         const q = query(
-            this.messages_ref,
-            orderBy('timestamp'),
-            // startAt(observeFrom)
+            this.messagesRef,
+            orderBy('timestamp')
         );
 
         return onSnapshot(q, (querySnapshot) => {
@@ -146,16 +140,15 @@ class ChatService {
                     type: change.type,
                     newIndex: change.newIndex,
                     oldIndex: change.oldIndex,
-                    data: {
+                    message: {
                         id: change.doc.id,
-                        text: data?.text,
-                        imageUrl: data?.imageUrl,
+                        text: data.text,
                         timestamp: data.timestamp,
-                        uid: data.uid
+                        uid: data.uid,
+                        profile: members.find((member) => member.id === data.uid)
                     }
                 });
             });
-            console.log('changedData', changedData);
 
             this.updateMessages(changedData, setMessages);
         });
@@ -165,21 +158,20 @@ class ChatService {
         changes: ChangedData[],
         setMessages: React.Dispatch<React.SetStateAction<Message[]>>
     ) {
-        console.log('updateMessages');
         setMessages((prev) => {
             const newMessages = [...prev];
 
             changes.forEach((change) => {
-                if (change.type === 'added') newMessages.push(change.data);
+                if (change.type === 'added') newMessages.push(change.message);
                 if (change.type === 'modified') {
                     const index = newMessages.findIndex(
-                        (item) => item.id === change.data.id
+                        (item) => item.id === change.message.id
                     );
-                    if (index >= 0) newMessages.splice(index, 1, change.data);
+                    if (index >= 0) newMessages.splice(index, 1, change.message);
                 }
                 if (change.type === 'removed') {
                     const index = newMessages.findIndex(
-                        (item) => item.id === change.data.id
+                        (item) => item.id === change.message.id
                     );
                     if (index >= 0) newMessages.splice(index, 1);
                 }
@@ -187,14 +179,6 @@ class ChatService {
 
             return newMessages;
         });
-    }
-
-    async requestNotificationsPermissions() {
-        // ...
-    }
-
-    async saveMessagingDeviceToken() {
-        // ...
     }
 }
 

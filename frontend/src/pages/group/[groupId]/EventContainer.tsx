@@ -156,7 +156,7 @@ function EventContainer() {
                                         <Heading size="md">
                                             {event.title}
                                         </Heading>
-                                        <Tag>{event.category}</Tag>
+                                        <Tag>{event.category ? 'ボランティア': '地域活動'}</Tag>
                                     </Flex>
                                     <Text fontSize="sm">
                                         日時: {event.dateTime}

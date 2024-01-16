@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Flex, Input, Button, VStack } from '@chakra-ui/react';
-import ChatService, { Message } from './ChatService';
-import { DocumentData } from '@firebase/firestore-types';
+import ChatService, { Message, Profile } from './ChatService';
 import { MessageList } from './MessageList';
 
 function ChatScreen(): JSX.Element {
     const [message, setMessage] = useState<string>('');
     const [messages, setMessages] = useState<Message[]>([]);
-    // const [observeFrom, setObserveFrom] = useState<DocumentData | null>(null);
+    const [members, setMembers] = useState<Profile[]>([]);
     const chatService = new ChatService();
 
-    // useEffect(() => {
-    //     chatService.init(setObserveFrom);
-    // }, []);
+    useEffect(() => {
+        const fetchMembers = async () => {
+            await chatService.fetchMembers(setMembers);
+            console.log(chatService.members);
+        };
+        fetchMembers();
+    }, []);
 
     useEffect(() => {
-        // if (!observeFrom) return;
-        const unsubscribe = chatService.createListener(setMessages);
+        if (members.length === 0) return;
+        console.log(chatService.members);
+        const unsubscribe = chatService.createListener(setMessages, members);
         return () => unsubscribe();
-    }, []);
+    }, [members]);
 
     const handleAddMessage = async () => {
         await chatService.addMessage(message, null);
@@ -27,14 +31,13 @@ function ChatScreen(): JSX.Element {
 
     return (
         <Box p={5}>
-            <Flex direction="column" h="500px">
+            <Flex direction="column" h="80vh">
                 <VStack
                     flex="1"
                     overflowY="auto"
                     spacing={4}
                     align="stretch"
                     p={3}
-                    bg="gray.100"
                     borderRadius="lg"
                 >
                     <MessageList messages={messages} />
@@ -42,11 +45,18 @@ function ChatScreen(): JSX.Element {
                 <Flex mt={4}>
                     <Input
                         placeholder="メッセージを入力..."
+                        focusBorderColor="teal.500"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddMessage()}
+                        onKeyPress={(e) =>
+                            e.key === 'Enter' && handleAddMessage()
+                        }
                     />
-                    <Button colorScheme="blue" ml={2} onClick={handleAddMessage}>
+                    <Button
+                        colorScheme="teal"
+                        ml={2}
+                        onClick={handleAddMessage}
+                    >
                         送信
                     </Button>
                 </Flex>
