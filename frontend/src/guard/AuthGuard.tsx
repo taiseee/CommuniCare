@@ -19,10 +19,13 @@ export function AuthGurad({ children }: { children: ReactNode }) {
 
     if (
         user === null &&
+        router.pathname !== '/' &&
+        router.pathname !== `/[eventId]` &&
+        router.pathname !== '/user/[userId]' &&
         router.pathname !== '/signin' &&
         router.pathname !== '/signup'
     ) {
-        router.push('/signin');
+        router.replace('/signin');
         return null;
     }
 

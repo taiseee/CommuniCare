@@ -1,7 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import { signOut } from 'firebase/auth';
 import { Link, Box, Flex, Text, Button, Stack } from '@chakra-ui/react';
+import { auth } from '@/lib/firebaseConfig';
+import { useAuthContext } from '@/provider/AuthProvider';
 
 type MenuToggleProps = {
     toggle: () => void;
@@ -85,6 +89,46 @@ function MenuItem({
     );
 }
 
+function AuthButton(): React.ReactNode {
+    const { user } = useAuthContext();
+    const router = useRouter();
+
+    const handleClick = () => {
+        signOut(auth)
+            .then(() => {
+                router.push('/signin');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    if (!user) {
+        return (
+            <MenuItem to="/signin">
+                <Button
+                    size="sm"
+                    rounded="md"
+                    colorScheme='gray'
+                >
+                    ログイン
+                </Button>
+            </MenuItem>
+        );
+    } else {
+        return (
+            <Button
+                size="sm"
+                rounded="md"
+                colorScheme='gray'
+                onClick={handleClick}
+            >
+                ログアウト
+            </Button>
+        );
+    }
+}
+
 function MenuLinks({ isOpen }: MenuLinksProps): React.ReactNode {
     return (
         <Box
@@ -101,21 +145,8 @@ function MenuLinks({ isOpen }: MenuLinksProps): React.ReactNode {
             >
                 <MenuItem to="/">ホーム</MenuItem>
                 <MenuItem to="/setup">ユーザ情報登録</MenuItem>
-                <MenuItem to="/search">検索</MenuItem>
                 <MenuItem to="/group">グループ</MenuItem>
-                <MenuItem to="/signin">
-                    <Button
-                        size="sm"
-                        rounded="md"
-                        color={['teal.400', 'teal.400', 'white', 'white']}
-                        bg={['white', 'white', 'teal.400', 'teal.400']}
-                        _hover={{
-                            bg: ['teal.400', 'teal.400', 'teal.400', 'teal.400']
-                        }}
-                    >
-                        ログイン
-                    </Button>
-                </MenuItem>
+                <AuthButton />
             </Stack>
         </Box>
     );
