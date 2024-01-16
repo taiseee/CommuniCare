@@ -40,7 +40,7 @@ export default function SignIn() {
     const onSubmit = async (data: formInputs) => {
         return signInWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
-                router.push('/');
+                router.back();
             })
             .catch((error) => {
                 setErrMsg(firebaseError(error, 'signin'));
@@ -50,7 +50,7 @@ export default function SignIn() {
     const signInWithGoogle = async () => {
         return signInWithPopup(auth, provider)
             .then(() => {
-                router.push('/');
+                router.back();
             })
             .catch((error) => {
                 setErrMsg(firebaseError(error, 'signin'));
