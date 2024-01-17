@@ -25,7 +25,6 @@ import {
 } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '@/lib/firebaseConfig';
-import { getEmbedding } from '@/lib/getEmbedding';
 import { useAuthContext } from '@/provider/AuthProvider';
 
 type formInputs = {
@@ -43,6 +42,7 @@ export default function Profile() {
     const router = useRouter();
     const { user } = useAuthContext();
     const createGroup = httpsCallable(functions, 'create_group');
+    const createUserVec = httpsCallable(functions, 'create_user_vector');
     const { handleSubmit, register, formState } = useForm<formInputs>({
         defaultValues: async () => await getUserProfile(user?.uid as string)
     });
@@ -58,22 +58,23 @@ export default function Profile() {
     }
 
     const onSubmit = async (data: formInputs) => {
-        const hobVec = await getEmbedding(data.hobbies);
-        const interVec = await getEmbedding(data.interests);
-        const userVec = hobVec.map((num, idx) => {
-            return (num + interVec[idx]) / 2;
-        });
-
+        const startTime = Date.now();
         const age = Number(data.age);
         const gender = Number(data.gender);
-
-        const userDoc = { ...data, userVec, age, gender };
-
-        return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true })
+        
+        return createUserVec({ hobbies: data.hobbies, interests: data.interests })
+            .then((result) => {
+                console.log('ベクトル作成完了', (Date.now() - startTime) / 1000, '秒');
+                const userVec = result.data?.userVec; // 赤線引かれるけど動くよ!!
+                const userDoc = { ...data, userVec, age, gender };
+                return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true });
+            })
             .then(() => {
+                console.log('ユーザ情報登録完了', (Date.now() - startTime) / 1000, '秒');
                 return createGroup({ userId: data.uid });
             })
             .then(() => {
+                console.log('グループ作成完了', (Date.now() - startTime) / 1000, '秒');
                 router.push('/');
             })
             .catch((error) => {
