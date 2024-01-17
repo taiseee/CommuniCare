@@ -14,7 +14,15 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { doc, setDoc } from 'firebase/firestore';
+import {
+    doc,
+    setDoc,
+    collection,
+    getDocs,
+    query,
+    where,
+    documentId,
+} from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '@/lib/firebaseConfig';
 import { getEmbedding } from '@/lib/getEmbedding';
@@ -35,8 +43,18 @@ export default function Profile() {
     const router = useRouter();
     const { user } = useAuthContext();
     const createGroup = httpsCallable(functions, 'create_group');
-    const { handleSubmit, register, formState } = useForm<formInputs>();
+    const { handleSubmit, register, formState } = useForm<formInputs>({
+        defaultValues: async () => await getUserProfile(user?.uid as string)
+    });
     const { errors, isSubmitting } = formState;
+
+    const getUserProfile = async (userId: string): Promise<formInputs> => {
+        const userRef = collection(db, 'users');
+        const userQ = query(userRef, where(documentId(), '==', userId));
+        const userSnapshot = await getDocs(userQ);
+        const user = userSnapshot.docs[0].data() as formInputs;
+        return user;
+    }
 
     const onSubmit = async (data: formInputs) => {
         const hobVec = await getEmbedding(data.hobbies);
@@ -121,12 +139,19 @@ export default function Profile() {
                                 <Select
                                     id="gender"
                                     placeholder="--"
-                                    {...register('gender')}
+                                    {...register('gender', {
+                                        required: '性別を選択してください',
+                                    })}
                                 >
                                     <option value="1">男</option>
                                     <option value="2">女</option>
                                     <option value="3">その他</option>
                                 </Select>
+                                {errors.gender && (
+                                    <FormErrorMessage>
+                                        {errors.gender.message}
+                                    </FormErrorMessage>
+                                )}
                             </FormControl>
                             <FormControl
                                 isInvalid={errors.area ? true : false}
@@ -135,7 +160,9 @@ export default function Profile() {
                                 <Select
                                     id="area"
                                     placeholder="--"
-                                    {...register('area')}
+                                    {...register('area', {
+                                        required: '居住区を選択してください'
+                                    })}
                                 >
                                     <option value="東区">東区</option>
                                     <option value="博多区">博多区</option>
@@ -146,6 +173,11 @@ export default function Profile() {
                                     <option value="早良区">早良区</option>
                                     <option value="西区">西区</option>
                                 </Select>
+                                {errors.area && (
+                                    <FormErrorMessage>
+                                        {errors.area.message}
+                                    </FormErrorMessage>
+                                )}
                             </FormControl>
                             <FormControl
                                 isInvalid={errors.interests ? true : false}
