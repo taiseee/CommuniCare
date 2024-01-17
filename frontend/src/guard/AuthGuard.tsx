@@ -30,14 +30,5 @@ export function AuthGurad({ children }: { children: ReactNode }) {
         return null;
     }
 
-    // ログインしている場合はホーム画面にリダイレクト
-    if (
-        user !== null &&
-        (router.pathname === '/signin' || router.pathname === '/signup')
-    ) {
-        router.replace('/');
-        return null;
-    }
-
     return <>{children}</>;
 }

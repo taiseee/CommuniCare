@@ -52,6 +52,7 @@ export default function Profile() {
         const userRef = collection(db, 'users');
         const userQ = query(userRef, where(documentId(), '==', userId));
         const userSnapshot = await getDocs(userQ);
+        if (userSnapshot.empty) return {} as formInputs;
         const user = userSnapshot.docs[0].data() as formInputs;
         return user;
     }

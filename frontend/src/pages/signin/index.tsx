@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
@@ -20,6 +20,7 @@ import {
     Text
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { useAuthContext } from '@/provider/AuthProvider';
 
 type formInputs = {
     email: string;
@@ -33,6 +34,7 @@ type formInputs = {
 export default function SignIn() {
     const router = useRouter();
     const [errMsg, setErrMsg] = useState<string>('');
+    const { user } = useAuthContext();
     const { handleSubmit, register, formState } = useForm<formInputs>();
     const { errors, isSubmitting } = formState;
     const [showPass, setShowPass] = useState<boolean>(false);
@@ -56,6 +58,12 @@ export default function SignIn() {
                 setErrMsg(firebaseError(error, 'signin'));
             });
     };
+
+    useEffect(() => {
+        if (user) {
+            router.back();
+        }
+    }, []);
 
     return (
         <>
