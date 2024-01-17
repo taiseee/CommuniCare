@@ -168,7 +168,6 @@ export default function Profile() {
                                     <option value="博多区">博多区</option>
                                     <option value="中央区">中央区</option>
                                     <option value="南区">南区</option>
-                                    <option value="西区">西区</option>
                                     <option value="城南区">城南区</option>
                                     <option value="早良区">早良区</option>
                                     <option value="西区">西区</option>
