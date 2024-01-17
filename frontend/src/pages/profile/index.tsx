@@ -38,6 +38,10 @@ type formInputs = {
     selfIntroduction: string;
 };
 
+type UserVecData = {
+    userVec: number[];
+};
+
 export default function Profile() {
     const router = useRouter();
     const { user } = useAuthContext();
@@ -65,7 +69,7 @@ export default function Profile() {
         return createUserVec({ hobbies: data.hobbies, interests: data.interests })
             .then((result) => {
                 console.log('ベクトル作成完了', (Date.now() - startTime) / 1000, '秒');
-                const userVec = result.data?.userVec; // 赤線引かれるけど動くよ!!
+                const userVec = (result.data as UserVecData)?.userVec;
                 const userDoc = { ...data, userVec, age, gender };
                 return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true });
             })
