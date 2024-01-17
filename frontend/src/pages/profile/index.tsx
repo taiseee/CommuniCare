@@ -14,7 +14,15 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { doc, setDoc } from 'firebase/firestore';
+import {
+    doc,
+    setDoc,
+    collection,
+    getDocs,
+    query,
+    where,
+    documentId,
+} from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '@/lib/firebaseConfig';
 import { getEmbedding } from '@/lib/getEmbedding';
@@ -25,17 +33,28 @@ type formInputs = {
     name: string;
     age: number;
     gender: number;
+    area: string;
     interests: string;
     hobbies: string;
     selfIntroduction: string;
 };
 
-export default function Setup() {
+export default function Profile() {
     const router = useRouter();
     const { user } = useAuthContext();
     const createGroup = httpsCallable(functions, 'create_group');
-    const { handleSubmit, register, formState } = useForm<formInputs>();
+    const { handleSubmit, register, formState } = useForm<formInputs>({
+        defaultValues: async () => await getUserProfile(user?.uid as string)
+    });
     const { errors, isSubmitting } = formState;
+
+    const getUserProfile = async (userId: string): Promise<formInputs> => {
+        const userRef = collection(db, 'users');
+        const userQ = query(userRef, where(documentId(), '==', userId));
+        const userSnapshot = await getDocs(userQ);
+        const user = userSnapshot.docs[0].data() as formInputs;
+        return user;
+    }
 
     const onSubmit = async (data: formInputs) => {
         const hobVec = await getEmbedding(data.hobbies);
@@ -51,14 +70,10 @@ export default function Setup() {
 
         return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true })
             .then(() => {
-                createGroup({ userId: data.uid })
-                    .then((res) => {
-                        router.push('/');
-                        console.log(res.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                return createGroup({ userId: data.uid });
+            })
+            .then(() => {
+                router.push('/');
             })
             .catch((error) => {
                 console.log(error);
@@ -124,12 +139,44 @@ export default function Setup() {
                                 <Select
                                     id="gender"
                                     placeholder="--"
-                                    {...register('gender')}
+                                    {...register('gender', {
+                                        required: '性別を選択してください',
+                                    })}
                                 >
                                     <option value="1">男</option>
                                     <option value="2">女</option>
                                     <option value="3">その他</option>
                                 </Select>
+                                {errors.gender && (
+                                    <FormErrorMessage>
+                                        {errors.gender.message}
+                                    </FormErrorMessage>
+                                )}
+                            </FormControl>
+                            <FormControl
+                                isInvalid={errors.area ? true : false}
+                            >
+                                <FormLabel htmlFor="area">居住区</FormLabel>
+                                <Select
+                                    id="area"
+                                    placeholder="--"
+                                    {...register('area', {
+                                        required: '居住区を選択してください'
+                                    })}
+                                >
+                                    <option value="東区">東区</option>
+                                    <option value="博多区">博多区</option>
+                                    <option value="中央区">中央区</option>
+                                    <option value="南区">南区</option>
+                                    <option value="城南区">城南区</option>
+                                    <option value="早良区">早良区</option>
+                                    <option value="西区">西区</option>
+                                </Select>
+                                {errors.area && (
+                                    <FormErrorMessage>
+                                        {errors.area.message}
+                                    </FormErrorMessage>
+                                )}
                             </FormControl>
                             <FormControl
                                 isInvalid={errors.interests ? true : false}

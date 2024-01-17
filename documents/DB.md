@@ -9,6 +9,7 @@
    | name               | 名前                     | string    |
    | age                | 年齢                     | integer   |
    | gender             | 性別                     | integer   |
+   | area               | 地域                     | string    |
    | interests          | 興味のあるもの             | string    |
    | hobbies            | 趣味                     | string    |
    | selfIntroduction   | 自己紹介                  | string    |

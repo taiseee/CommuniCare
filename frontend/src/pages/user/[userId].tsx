@@ -32,6 +32,7 @@ interface UserDetail {
     name: string;
     age: number;
     gender: number;
+    area: string;
     interests: string;
     hobbies: string;
     selfIntroduction: string;
@@ -41,6 +42,7 @@ export default function UserDetail() {
     const router = useRouter();
     const { userId } = router.query;
     const [user, setUser] = useState<UserDetail>();
+    const [isFetchedEvents, setIsFetchedEvents] = useState<boolean>(false);
     const [participateEvents, setParticipateEvents] = useState<EventListItemType[]>([]);
     const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
 
@@ -90,6 +92,7 @@ export default function UserDetail() {
         getPaticipateEvents(userId as string)
             .then((participateEvents) => {
                 setParticipateEvents(participateEvents);
+                setIsFetchedEvents(true);
             })
             .catch((error) => {
                 console.error(error);
@@ -111,6 +114,7 @@ export default function UserDetail() {
                         <Heading size="lg">{user?.name}</Heading>
                         <Text ml={3} fontSize="sm" color="gray.500">{user?.age}歳</Text>
                         <Text ml={3} fontSize="sm" color="gray.500">{user?.gender === 1 ? '男性' : user?.gender === 2 ? '女性' : 'その他'}</Text>
+                        <Text ml={3} fontSize="sm" color="gray.500">{user?.area}</Text>
                     </Flex>
                 </CardHeader>
                 <CardBody>
@@ -137,7 +141,7 @@ export default function UserDetail() {
                     <Heading size="md">参加イベント({participateEvents.length} 件)</Heading>
                     <Box pt={2} px={2}>
                         {
-                            participateEvents.length !== 0 ? (
+                            isFetchedEvents? (
                                 participateEvents.map((participateEvent: EventListItemType) => {
                                     return (
                                         <EventListItem key={participateEvent.eventId} event={participateEvent} />
