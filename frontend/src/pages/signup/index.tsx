@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
@@ -20,6 +20,7 @@ import {
     Text
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { useAuthContext } from '@/provider/AuthProvider';
 
 type formInputs = {
     email: string;
@@ -33,6 +34,7 @@ type formInputs = {
 export default function SignUp() {
     const [errMsg, setErrMsg] = useState<string>('');
     const router = useRouter();
+    const { user } = useAuthContext();
     const { handleSubmit, register, formState } = useForm<formInputs>();
     const { errors, isSubmitting } = formState;
     const [showPass, setShowPass] = useState<boolean>(false);
@@ -56,6 +58,12 @@ export default function SignUp() {
                 setErrMsg(firebaseError(error, 'signup'));
             });
     };
+
+    useEffect(() => {
+        if (user) {
+            router.back();
+        }
+    }, []);
 
     return (
         <>
