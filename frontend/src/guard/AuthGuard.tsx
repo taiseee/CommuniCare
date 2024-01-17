@@ -17,6 +17,7 @@ export function AuthGurad({ children }: { children: ReactNode }) {
         );
     }
 
+    // ログインしていない場合はログイン画面にリダイレクト
     if (
         user === null &&
         router.pathname !== '/' &&
@@ -26,6 +27,15 @@ export function AuthGurad({ children }: { children: ReactNode }) {
         router.pathname !== '/signup'
     ) {
         router.replace('/signin');
+        return null;
+    }
+
+    // ログインしている場合はホーム画面にリダイレクト
+    if (
+        user !== null &&
+        (router.pathname === '/signin' || router.pathname === '/signup')
+    ) {
+        router.replace('/');
         return null;
     }
 
