@@ -30,7 +30,7 @@ type formInputs = {
     selfIntroduction: string;
 };
 
-export default function Setup() {
+export default function Profile() {
     const router = useRouter();
     const { user } = useAuthContext();
     const createGroup = httpsCallable(functions, 'create_group');

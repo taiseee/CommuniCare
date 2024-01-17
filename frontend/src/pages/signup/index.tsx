@@ -40,7 +40,7 @@ export default function SignUp() {
     const onSubmit = async (data: formInputs) => {
         return createUserWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
-                router.push('/setup');
+                router.push('/profile');
             })
             .catch((error) => {
                 setErrMsg(firebaseError(error, 'signup'));
@@ -50,7 +50,7 @@ export default function SignUp() {
     const signInWithGoogle = async () => {
         return signInWithPopup(auth, provider)
             .then(() => {
-                router.push('/setup');
+                router.push('/profile');
             })
             .catch((error) => {
                 setErrMsg(firebaseError(error, 'signup'));
