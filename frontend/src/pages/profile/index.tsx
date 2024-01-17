@@ -25,6 +25,7 @@ type formInputs = {
     name: string;
     age: number;
     gender: number;
+    area: string;
     interests: string;
     hobbies: string;
     selfIntroduction: string;
@@ -51,14 +52,10 @@ export default function Profile() {
 
         return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true })
             .then(() => {
-                createGroup({ userId: data.uid })
-                    .then((res) => {
-                        router.push('/');
-                        console.log(res.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                return createGroup({ userId: data.uid });
+            })
+            .then(() => {
+                router.push('/');
             })
             .catch((error) => {
                 console.log(error);
@@ -129,6 +126,25 @@ export default function Profile() {
                                     <option value="1">男</option>
                                     <option value="2">女</option>
                                     <option value="3">その他</option>
+                                </Select>
+                            </FormControl>
+                            <FormControl
+                                isInvalid={errors.area ? true : false}
+                            >
+                                <FormLabel htmlFor="area">居住区</FormLabel>
+                                <Select
+                                    id="area"
+                                    placeholder="--"
+                                    {...register('area')}
+                                >
+                                    <option value="東区">東区</option>
+                                    <option value="博多区">博多区</option>
+                                    <option value="中央区">中央区</option>
+                                    <option value="南区">南区</option>
+                                    <option value="西区">西区</option>
+                                    <option value="城南区">城南区</option>
+                                    <option value="早良区">早良区</option>
+                                    <option value="西区">西区</option>
                                 </Select>
                             </FormControl>
                             <FormControl
