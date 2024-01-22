@@ -1,9 +1,14 @@
 import React from 'react';
-import { Box, Grid } from '@chakra-ui/react';
+import { Box, Grid, IconButton} from '@chakra-ui/react';
+import { ChatIcon } from '@chakra-ui/icons';
+import NextLink from 'next/link';
+import { useParams } from 'next/navigation';
 import MemberContainer from './MemberContainer';
 import EventContainer from './EventContainer';
 
 function GroupDetail() {
+   const params = useParams();
+   const chatPath = `/group/${params.groupId}/chat`;
     return (
         <>
             <Box p={4} bg="gray.200">
@@ -22,6 +27,19 @@ function GroupDetail() {
                     <MemberContainer />
                 </Grid>
             </Box>
+            <NextLink href={chatPath} >
+                <IconButton
+                    icon={<ChatIcon />}
+                    aria-label="チャット"
+                    isRound
+                    position="fixed"
+                    bottom={4}
+                    right={4}
+                    px='6'
+                    h='16'
+                    boxShadow="lg"
+                />
+            </NextLink>
         </>
     );
 }
