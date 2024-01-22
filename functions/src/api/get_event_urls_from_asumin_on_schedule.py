@@ -1,6 +1,5 @@
 from firebase_functions import scheduler_fn
 from firebase_admin import firestore
-from firebase_admin import firestore
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -27,8 +26,8 @@ def get_event_urls_from_asumin_on_schedule(schedule_event: scheduler_fn.Schedule
         if posted_date == date:
             event_url = "https://www.fnvc.jp" + event.find("a").get("href") # type: ignore
             db = firestore.client()
-            event_ref = db.collection("eventUrls")
-            event_ref.add(
+            event_urls_ref = db.collection("eventUrls")
+            event_urls_ref.add(
                 {
                     "url": event_url,
                     "createdAt": firestore.SERVER_TIMESTAMP,
