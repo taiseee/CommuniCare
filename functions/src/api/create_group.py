@@ -7,6 +7,7 @@ from ..service import first_recommend_events
 from firebase_admin import firestore
 
 @https_fn.on_call(
+    region="asia-northeast1",
     memory=512,
     timeout_sec=300,
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
@@ -32,18 +33,18 @@ def create_group(req: https_fn.CallableRequest):
         if len(cos_sim[0]) < 5:
             return {"message": "Not enough users for comparison"}
 
-        top5_users_index = np.argsort(cos_sim[0])[-5:]
+        users_grouped_index = np.argsort(cos_sim[0])[-4:]
 
-        top5_users = [all_users_list[i] for i in top5_users_index]
+        users_grouped = [all_users_list[i] for i in users_grouped_index]
 
-        new_group_name = ' '.join([user.to_dict()['name'] for user in top5_users])
+        new_group_name = ' '.join([user.to_dict()['name'] for user in users_grouped])
         new_group = db.collection("groups").add(
             {
                 "name": new_group_name,
             }
         )
         
-        for user in top5_users:
+        for user in users_grouped:
             db.collection("userGroups").add(
                 {
                     "userId": user.id,
