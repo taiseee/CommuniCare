@@ -4,6 +4,7 @@ from src.api import (
     create_group,
     create_user_vector,
     get_event_urls_from_asumin_on_schedule,
+    get_event_urls_from_vt_pf_on_schedule,
     get_events_on_created,
     recommend_event_on_schedule
 )
