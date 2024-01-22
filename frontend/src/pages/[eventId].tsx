@@ -31,7 +31,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useAuthContext } from '@/provider/AuthProvider';
-import ParticipationButton from '@/pages/group/ParticipationButton';
+import ParticipationButton from '@/pages/group/[groupId]/ParticipationButton';
 
 interface EventDetail {
     eventId: string;
