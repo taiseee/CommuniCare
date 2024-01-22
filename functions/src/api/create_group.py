@@ -4,7 +4,24 @@ from firebase_admin import firestore
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from ..service import first_recommend_events
-from firebase_admin import firestore
+
+# ユーザーの居住区の緯度経度をベクトルに追加する
+def add_location_to_userVec(userVec, area):
+    area_location = {
+        # 参考: https://www.geocoding.jp/
+        "東区": [33.659239, 130.390461],
+        "博多区": [33.574402, 130.440766],
+        "中央区": [33.583832, 130.386348],
+        "南区": [33.540948, 130.408402],
+        "城南区": [33.548689, 130.369533],
+        "早良区": [33.510704, 130.338233],
+        "西区": [33.690042, 130.188521],
+    }
+
+    latitude, longitude = area_location.get(area, [0, 0])
+    userVec_with_location = np.append(userVec, [latitude, longitude])
+
+    return userVec_with_location
 
 @https_fn.on_call(
     region="asia-northeast1",
@@ -24,17 +41,26 @@ def create_group(req: https_fn.CallableRequest):
         all_users = db.collection("users").get()
         all_users_list = [user for user in all_users]
 
-        userVec = np.array(user.to_dict()['userVec'])
-        all_userVecs = np.array([user.to_dict()['userVec'] for user in all_users_list])
-        if len(all_userVecs) == 0:
-            return {"message": "No users found"}
+        if len(all_users_list) < 4:
+            return {"message": "user is not enough"}
+
+        userVec = add_location_to_userVec(
+            np.array(user.to_dict()['userVec']),
+            user.to_dict()['area']
+        )
+        all_userVecs = np.array(
+            [
+                add_location_to_userVec(
+                    np.array(user.to_dict()['userVec']),
+                    user.to_dict()['area']
+                )
+                for user in all_users_list
+            ]
+        )
 
         cos_sim = cosine_similarity(userVec.reshape(1, -1), all_userVecs)
-        if len(cos_sim[0]) < 5:
-            return {"message": "Not enough users for comparison"}
 
         users_grouped_index = np.argsort(cos_sim[0])[-4:]
-
         users_grouped = [all_users_list[i] for i in users_grouped_index]
 
         new_group_name = ' '.join([user.to_dict()['name'] for user in users_grouped])
