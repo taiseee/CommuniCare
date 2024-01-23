@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Flex, Input, Button, VStack } from '@chakra-ui/react';
 import ChatService, { Message, Profile } from './ChatService';
-import { MessageList } from './MessageList';
+import MessageList from './MessageList';
 
 function ChatScreen(): JSX.Element {
     const [message, setMessage] = useState<string>('');

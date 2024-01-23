@@ -25,7 +25,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useParams } from 'next/navigation';
-import { ParticipationContainer } from './ParticipationContainer';
+import ParticipationContainer from './ParticipationContainer';
 
 export interface Event {
     id: string;

@@ -52,7 +52,7 @@ class ChatService {
     auth: Auth = getAuth();
     storage: FirebaseStorage = getStorage();
     provider: AuthProvider = new GoogleAuthProvider();
-    groupId: string = useParams().groupId;
+    groupId: string = useParams().groupId as string;
     messagesRef: CollectionReference = collection(
         db,
         'groups',

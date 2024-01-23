@@ -7,7 +7,7 @@ interface props {
     event: Event;
 }
 
-export function ParticipationContainer({ event }: props): JSX.Element {
+export default function ParticipationContainer({ event }: props): JSX.Element {
     const [status, setStatus] = useState<number>(2);
     return (
         <>
