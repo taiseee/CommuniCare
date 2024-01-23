@@ -134,7 +134,6 @@ function MenuLinks({ isOpen }: MenuLinksProps): React.ReactNode {
         <Box
             display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
             flexBasis={{ base: '100%', md: 'auto' }}
-            w="100%"
         >
             <Stack
                 spacing={8}
@@ -169,6 +168,7 @@ function NavBarContainer({
             color={['white', 'white', 'white', 'white']}
             {...props}
         >
+            <Text as={NextLink} href="/" fontSize="xl" fontWeight="bold" ml={4}>Communicare</Text>
             {children}
         </Flex>
     );
