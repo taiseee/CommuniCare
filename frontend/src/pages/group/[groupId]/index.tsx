@@ -3,6 +3,7 @@ import { Box, Grid, IconButton} from '@chakra-ui/react';
 import { ChatIcon } from '@chakra-ui/icons';
 import NextLink from 'next/link';
 import { useParams } from 'next/navigation';
+import EventHaeder from './EventHeader';
 import MemberContainer from './MemberContainer';
 import EventContainer from './EventContainer';
 
@@ -12,6 +13,7 @@ function GroupDetail() {
     return (
         <>
             <Box p={4} bg="gray.200">
+                <EventHaeder />
                 <Grid
                     templateColumns={{
                         base: 'repeat(1, 1fr)',
