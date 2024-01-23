@@ -49,23 +49,32 @@ function ParticipantList({ eventId, status }: ParticipantListProps) {
                 .map((doc) => doc.data().userId);
 
             if (participantIds.length === 0) return setParticipants([]);
+            
+            // クエリのin句に渡せるようにidを30個ずつに分割
+            const chunkSize: number = 30;
+            const participantIdChunks: string[][] = [];
+            for (let i = 0; i < participantIds.length; i += chunkSize) {
+                participantIdChunks.push(participantIds.slice(i, i + chunkSize));
+            }
 
             // ユーザーのデータを取得
             const usersRef = collection(db, 'users');
-            const usersQ = query(
-                usersRef,
-                where(documentId(), 'in', participantIds),
-                where(documentId(), 'in', userIds)
+            const usersSnapshots = await Promise.all(
+                participantIdChunks.map((participantIds) => {
+                    const usersQ = query(
+                        usersRef,
+                        where(documentId(), 'in', participantIds),
+                        where(documentId(), 'in', userIds)
+                    );
+                    return getDocs(usersQ);
+                })
             );
-            const usersSnapshot = await getDocs(usersQ);
-            const newParticipants: Participant[] = [];
-            usersSnapshot.forEach((doc) => {
-                newParticipants.push({
-                    ...(doc.data() as Participant),
-                    id: doc.id
+            const participantLists = usersSnapshots.flatMap((snapshot) => {
+                return snapshot.docs.map((doc) => {
+                    return { ...(doc.data() as Participant), id: doc.id };
                 });
             });
-            setParticipants(newParticipants);
+            setParticipants(participantLists);
         } catch (error) {
             console.error('Error fetching events: ', error);
         }
