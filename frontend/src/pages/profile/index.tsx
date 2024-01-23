@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import {
     Box,
     Heading,
@@ -43,6 +44,7 @@ type UserVecData = {
 };
 
 export default function Profile() {
+    const [isNewUser, setIsNewUser] = useState<boolean>(false);
     const router = useRouter();
     const { user } = useAuthContext();
     const createGroup = httpsCallable(functions, 'create_group');
@@ -56,30 +58,30 @@ export default function Profile() {
         const userRef = collection(db, 'users');
         const userQ = query(userRef, where(documentId(), '==', userId));
         const userSnapshot = await getDocs(userQ);
-        if (userSnapshot.empty) return {} as formInputs;
+        if (userSnapshot.empty) { // userが空→新規user
+            setIsNewUser(true);
+            return {} as formInputs;
+        }
         const user = userSnapshot.docs[0].data() as formInputs;
         return user;
     }
 
     const onSubmit = async (data: formInputs) => {
-        const startTime = Date.now();
         const age = Number(data.age);
         const gender = Number(data.gender);
         
         return createUserVec({ hobbies: data.hobbies, interests: data.interests })
             .then((result) => {
-                console.log('ベクトル作成完了', (Date.now() - startTime) / 1000, '秒');
                 const userVec = (result.data as UserVecData)?.userVec;
                 const userDoc = { ...data, userVec, age, gender };
                 return setDoc(doc(db, 'users', data.uid), userDoc, { merge: true });
             })
             .then(() => {
-                console.log('ユーザ情報登録完了', (Date.now() - startTime) / 1000, '秒');
+                if (!isNewUser) return; // グループ作成は新規ユーザのみ
                 return createGroup({ userId: data.uid });
             })
             .then(() => {
-                console.log('グループ作成完了', (Date.now() - startTime) / 1000, '秒');
-                router.push('/');
+                router.push('/group');
             })
             .catch((error) => {
                 console.log(error);
@@ -177,6 +179,7 @@ export default function Profile() {
                                     <option value="城南区">城南区</option>
                                     <option value="早良区">早良区</option>
                                     <option value="西区">西区</option>
+                                    <option value="その他">その他</option>
                                 </Select>
                                 {errors.area && (
                                     <FormErrorMessage>
