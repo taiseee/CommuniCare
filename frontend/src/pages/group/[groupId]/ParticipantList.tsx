@@ -6,10 +6,9 @@ import {
     where,
     documentId
 } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebaseConfig';
+import { db } from '@/lib/firebaseConfig';
 import { useParams } from 'next/navigation';
 import { Avatar, AvatarGroup } from '@chakra-ui/react';
-import { patchFetch } from 'next/dist/server/app-render/entry-base';
 
 interface Participant {
     id: string;
@@ -28,13 +27,13 @@ function ParticipantList({ eventId, status }: ParticipantListProps) {
     async function fetchParticipants() {
         try {
             // グループに参加しているユーザーのidを取得
-            const groupUsersRef = collection(db, 'groupUsers');
-            const groupUsersQ = query(
-                groupUsersRef,
+            const userGroupsRef = collection(db, 'userGroups');
+            const userGroupsQ = query(
+                userGroupsRef,
                 where('groupId', '==', params.groupId)
             );
-            const groupUsersSnapshot = await getDocs(groupUsersQ);
-            const userIds = groupUsersSnapshot.docs.map(
+            const userGroupsSnapshot = await getDocs(userGroupsQ);
+            const userIds = userGroupsSnapshot.docs.map(
                 (doc) => doc.data().userId
             );
 
@@ -55,7 +54,8 @@ function ParticipantList({ eventId, status }: ParticipantListProps) {
             const usersRef = collection(db, 'users');
             const usersQ = query(
                 usersRef,
-                where(documentId(), 'in', participantIds)
+                where(documentId(), 'in', participantIds),
+                where(documentId(), 'in', userIds)
             );
             const usersSnapshot = await getDocs(usersQ);
             const newParticipants: Participant[] = [];
