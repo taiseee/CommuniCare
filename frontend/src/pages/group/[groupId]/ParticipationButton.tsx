@@ -21,10 +21,11 @@ import {
 
 interface ParticipationButtonProps {
     eventId: string;
+    status: number;
+    setStatus: React.Dispatch<React.SetStateAction<number>>;
 }
 
-function ParticipationButton({ eventId }: ParticipationButtonProps) {
-    const [status, setStatuses] = useState<number>(2);
+function ParticipationButton({ eventId, status, setStatus }: ParticipationButtonProps) {
     const auth = getAuth();
     const uid = auth.currentUser?.uid;
 
@@ -39,7 +40,7 @@ function ParticipationButton({ eventId }: ParticipationButtonProps) {
             );
             const userEventsSnapshot = await getDocs(userEventsQ);
             userEventsSnapshot.forEach((doc) => {
-                setStatuses(doc.data().participationStatus);
+                setStatus(doc.data().participationStatus);
             });
         } catch (error) {
             console.error('Error fetching profiles: ', error);
@@ -54,7 +55,7 @@ function ParticipationButton({ eventId }: ParticipationButtonProps) {
                 eventId: eventId,
                 participationStatus: participationStatus
             });
-            setStatuses(participationStatus);
+            setStatus(participationStatus);
         } catch (error) {
             console.error('Error saving participation status: ', error);
         }
@@ -73,7 +74,7 @@ function ParticipationButton({ eventId }: ParticipationButtonProps) {
             userEventsSnapshot.forEach(async (doc) => {
                 await deleteDoc(doc.ref);
             });
-            setStatuses(2);
+            setStatus(2);
         } catch (error) {
             console.error('Error deleting user event: ', error);
         }

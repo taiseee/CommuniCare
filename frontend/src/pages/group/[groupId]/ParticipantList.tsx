@@ -6,9 +6,10 @@ import {
     where,
     documentId
 } from 'firebase/firestore';
-import { db } from '@/lib/firebaseConfig';
+import { db, auth } from '@/lib/firebaseConfig';
 import { useParams } from 'next/navigation';
 import { Avatar, AvatarGroup } from '@chakra-ui/react';
+import { patchFetch } from 'next/dist/server/app-render/entry-base';
 
 interface Participant {
     id: string;
@@ -18,9 +19,10 @@ interface Participant {
 
 interface ParticipantListProps {
     eventId: string;
+    status: number;
 }
 
-function ParticipantList({ eventId }: ParticipantListProps) {
+function ParticipantList({ eventId, status }: ParticipantListProps) {
     const [participants, setParticipants] = useState<Participant[]>([]);
     const params = useParams();
     async function fetchParticipants() {
@@ -47,6 +49,8 @@ function ParticipantList({ eventId }: ParticipantListProps) {
                 .filter((doc) => doc.data().participationStatus === 1)
                 .map((doc) => doc.data().userId);
 
+            if (participantIds.length === 0) return setParticipants([]);
+
             // ユーザーのデータを取得
             const usersRef = collection(db, 'users');
             const usersQ = query(
@@ -68,8 +72,10 @@ function ParticipantList({ eventId }: ParticipantListProps) {
     }
 
     useEffect(() => {
+        console.log('eventId: ', eventId);
         fetchParticipants();
-    }, []);
+        console.log('end');
+    }, [status]);
 
     return (
         <>
