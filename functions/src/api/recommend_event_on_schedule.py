@@ -6,6 +6,7 @@ import random
 @scheduler_fn.on_schedule(
     schedule="every friday 16:00",
     timezone=scheduler_fn.Timezone("Asia/Tokyo"),
+    region="asia-northeast1",
     memory=512,
 )
 def recommend_event_on_schedule(schedule_event: scheduler_fn.ScheduledEvent) -> None:

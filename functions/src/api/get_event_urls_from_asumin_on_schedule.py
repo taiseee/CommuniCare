@@ -8,6 +8,7 @@ from datetime import datetime
 @scheduler_fn.on_schedule(
     schedule="every day 23:59",
     timezone=scheduler_fn.Timezone("Asia/Tokyo"),
+    region="asia-northeast1",
     memory=512,
 )
 def get_event_urls_from_asumin_on_schedule(schedule_event: scheduler_fn.ScheduledEvent) -> None:
