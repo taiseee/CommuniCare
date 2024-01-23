@@ -17,7 +17,13 @@ import {
     CardHeader,
     CardBody,
     SkeletonText,
-    Skeleton
+    Skeleton,
+    Flex,
+    Avatar,
+    Table,
+    Tbody,
+    Tr,
+    Td,
 } from '@chakra-ui/react';
 
 // プロフィールの型定義
@@ -28,7 +34,8 @@ interface Profile {
     gender: number;
     interests: string;
     hobbies: string;
-    selfIntroduction: string;
+    selfIntroduction: string | null;
+    area: string;
 }
 
 function MemberContainer() {
@@ -104,32 +111,37 @@ function MemberContainer() {
                             <GridItem key={profile.id} rowSpan={1} colSpan={1}>
                                 <Card>
                                     <CardHeader>
-                                        <Heading size="md">
-                                            {profile.name}
-                                        </Heading>
+                                        <Flex alignItems="center">
+                                            <Avatar
+                                                name={profile.name}
+                                                bg="gray.100"
+                                                color="black"
+                                                size="md"
+                                                mr={3}
+                                            />
+                                            <Heading size="md">{profile.name}</Heading>
+                                            <Text ml={3} fontSize="sm" color="gray.500">{profile.age}歳</Text>
+                                            <Text ml={3} fontSize="sm" color="gray.500">{profile.gender === 1 ? '男性' : profile.gender === 2 ? '女性' : 'その他'}</Text>
+                                            <Text ml={3} fontSize="sm" color="gray.500">{profile.area}</Text>
+                                        </Flex>
                                     </CardHeader>
                                     <CardBody>
-                                        <Text fontSize="sm">
-                                            年齢: {profile.age}歳
-                                        </Text>
-                                        <Text fontSize="sm">
-                                            性別:{' '}
-                                            {profile.gender === 1
-                                                ? '男性'
-                                                : profile.gender === 2
-                                                  ? '女性'
-                                                  : '登録なし'}
-                                        </Text>
-                                        <Text fontSize="sm">
-                                            興味のあること: {profile.interests}
-                                        </Text>
-                                        <Text fontSize="sm">
-                                            趣味: {profile.hobbies}
-                                        </Text>
-                                        <Text fontSize="sm" noOfLines={2}>
-                                            自己紹介:
-                                            {profile.selfIntroduction}
-                                        </Text>
+                                        <Table variant="simple">
+                                            <Tbody>
+                                                <Tr>
+                                                    <Td px={0} fontWeight={'bold'}>興味</Td>
+                                                    <Td px={0}>{profile.interests}</Td>
+                                                </Tr>
+                                                <Tr>
+                                                    <Td px={0} fontWeight={'bold'}>趣味</Td>
+                                                    <Td px={0}>{profile.hobbies}</Td>
+                                                </Tr>
+                                                <Tr>
+                                                    <Td px={0} w="20%" fontWeight={'bold'}>自己紹介</Td>
+                                                    <Td px={0}>{profile?.selfIntroduction}</Td>
+                                                </Tr>
+                                            </Tbody>
+                                        </Table>
                                     </CardBody>
                                 </Card>
                             </GridItem>

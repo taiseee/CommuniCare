@@ -18,21 +18,22 @@ interface Participant {
 
 interface ParticipantListProps {
     eventId: string;
+    status: number;
 }
 
-function ParticipantList({ eventId }: ParticipantListProps) {
+function ParticipantList({ eventId, status }: ParticipantListProps) {
     const [participants, setParticipants] = useState<Participant[]>([]);
     const params = useParams();
     async function fetchParticipants() {
         try {
             // グループに参加しているユーザーのidを取得
-            const groupUsersRef = collection(db, 'groupUsers');
-            const groupUsersQ = query(
-                groupUsersRef,
+            const userGroupsRef = collection(db, 'userGroups');
+            const userGroupsQ = query(
+                userGroupsRef,
                 where('groupId', '==', params.groupId)
             );
-            const groupUsersSnapshot = await getDocs(groupUsersQ);
-            const userIds = groupUsersSnapshot.docs.map(
+            const userGroupsSnapshot = await getDocs(userGroupsQ);
+            const userIds = userGroupsSnapshot.docs.map(
                 (doc) => doc.data().userId
             );
 
@@ -47,11 +48,14 @@ function ParticipantList({ eventId }: ParticipantListProps) {
                 .filter((doc) => doc.data().participationStatus === 1)
                 .map((doc) => doc.data().userId);
 
+            if (participantIds.length === 0) return setParticipants([]);
+
             // ユーザーのデータを取得
             const usersRef = collection(db, 'users');
             const usersQ = query(
                 usersRef,
-                where(documentId(), 'in', participantIds)
+                where(documentId(), 'in', participantIds),
+                where(documentId(), 'in', userIds)
             );
             const usersSnapshot = await getDocs(usersQ);
             const newParticipants: Participant[] = [];
@@ -68,8 +72,10 @@ function ParticipantList({ eventId }: ParticipantListProps) {
     }
 
     useEffect(() => {
+        console.log('eventId: ', eventId);
         fetchParticipants();
-    }, []);
+        console.log('end');
+    }, [status]);
 
     return (
         <>

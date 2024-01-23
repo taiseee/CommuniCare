@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import {
     Box,
@@ -20,18 +20,18 @@ import {
     Td,
     useMediaQuery
 } from '@chakra-ui/react';
-import { ExternalLinkIcon } from '@chakra-ui/icons'
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import {
     collection,
     getDocs,
     query,
     where,
     documentId,
-    Timestamp,
+    Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import { useAuthContext } from '@/provider/AuthProvider';
-import ParticipationButton from '@/pages/group/[groupId]/ParticipationButton';
+import ParticipationButton from '@/components/ParticipationButton';
 
 interface EventDetail {
     eventId: string;
@@ -45,18 +45,19 @@ interface EventDetail {
     contact: string;
     createdAt: Timestamp;
     updatedAt: Timestamp;
-};
+}
 
 interface eventPatipant {
     userId: string;
     name: string;
-};
+}
 
 export default function EventDetail() {
     const router = useRouter();
     const { user } = useAuthContext();
-    const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
+    const [isSmallerThan480] = useMediaQuery('(max-width: 480px)');
     const [event, setEvent] = useState<EventDetail>();
+    const [status, setStatus] = useState<number>(0);
     const [participants, setParticipants] = useState<eventPatipant[]>([]);
     const { eventId } = router.query;
 
@@ -66,11 +67,15 @@ export default function EventDetail() {
         const eventSnapshot = await getDocs(eventQ);
         const eventData = eventSnapshot.docs[0].data() as EventDetail;
         return eventData;
-    };
+    }
 
     async function getEventParticipants(eventId: string) {
         const userEventsRef = collection(db, 'userEvents');
-        const userEventsQ = query(userEventsRef, where('eventId', '==', eventId), where('participationStatus', '==', 1));
+        const userEventsQ = query(
+            userEventsRef,
+            where('eventId', '==', eventId),
+            where('participationStatus', '==', 1)
+        );
         const userEventsSnapshot = await getDocs(userEventsQ);
         const participants = await Promise.all(
             userEventsSnapshot.docs.map(async (doc) => {
@@ -79,12 +84,15 @@ export default function EventDetail() {
                 const userQ = query(userRef, where(documentId(), '==', userId));
                 const userSnapshot = await getDocs(userQ);
                 const userData = userSnapshot.docs[0].data();
-                const user = { userId: userId, name: userData.name } as eventPatipant;
+                const user = {
+                    userId: userId,
+                    name: userData.name
+                } as eventPatipant;
                 return user;
             })
         );
         return participants;
-    };
+    }
 
     useEffect(() => {
         getEventDetail(eventId as string)
@@ -94,7 +102,10 @@ export default function EventDetail() {
             .catch((error) => {
                 console.error('Error fetching events: ', error);
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
+    useEffect(() => {
         getEventParticipants(eventId as string)
             .then((participants) => {
                 setParticipants(participants);
@@ -102,47 +113,116 @@ export default function EventDetail() {
             .catch((error) => {
                 console.error('Error fetching events: ', error);
             });
-    }, [eventId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status]);
 
     return (
-        <Box mt={4} mx={5} px={isSmallerThan480? 0 : 5}>
-            <Grid templateColumns={isSmallerThan480 ? "1fr" : "3fr 1fr"} gap={6}>
+        <Box mt={4} mx={5} px={isSmallerThan480 ? 0 : 5}>
+            <Grid
+                templateColumns={isSmallerThan480 ? '1fr' : '3fr 1fr'}
+                gap={6}
+            >
                 <Card>
                     <CardHeader>
                         <Box mb={2}>
-                            {event?.category ?
-                                <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
-                                :
-                                <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
-                            }
+                            {event?.category ? (
+                                <Badge variant="subtle" colorScheme="green">
+                                    ボランティア
+                                </Badge>
+                            ) : (
+                                <Badge variant="subtle" colorScheme="blue">
+                                    地域活動
+                                </Badge>
+                            )}
                         </Box>
-                        <Heading size='lg' mb={2}>{event?.title}</Heading>
-                        <Text color='grey'>主催: {event?.host}</Text>
+                        <Heading size="lg" mb={2}>
+                            {event?.title}
+                        </Heading>
+                        <Text color="grey">主催: {event?.host}</Text>
                     </CardHeader>
                     <CardBody>
                         <Table variant="simple">
                             <Tbody>
                                 <Tr>
-                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>開催場所</Td>
-                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.location}</Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '30%' : '20%'}
+                                        px={0}
+                                        fontWeight={'bold'}
+                                    >
+                                        開催場所
+                                    </Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '70%' : '80%'}
+                                        px={0}
+                                    >
+                                        {event?.location}
+                                    </Td>
                                 </Tr>
                                 <Tr>
-                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>開催日時</Td>
-                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.dateTime}</Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '30%' : '20%'}
+                                        px={0}
+                                        fontWeight={'bold'}
+                                    >
+                                        開催日時
+                                    </Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '70%' : '80%'}
+                                        px={0}
+                                    >
+                                        {event?.dateTime}
+                                    </Td>
                                 </Tr>
                                 <Tr>
-                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>詳細</Td>
-                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.description}</Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '30%' : '20%'}
+                                        px={0}
+                                        fontWeight={'bold'}
+                                    >
+                                        詳細
+                                    </Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '70%' : '80%'}
+                                        px={0}
+                                    >
+                                        {event?.description}
+                                    </Td>
                                 </Tr>
                                 <Tr>
-                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>連絡先</Td>
-                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>{event?.contact}</Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '30%' : '20%'}
+                                        px={0}
+                                        fontWeight={'bold'}
+                                    >
+                                        連絡先
+                                    </Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '70%' : '80%'}
+                                        px={0}
+                                    >
+                                        {event?.contact}
+                                    </Td>
                                 </Tr>
                                 <Tr>
-                                    <Td width={isSmallerThan480 ? '30%' : '20%'} px={0} fontWeight={'bold'}>URL</Td>
-                                    <Td width={isSmallerThan480 ? '70%' : '80%'} px={0}>
-                                        <Link href={event?.url} target="_blank" color="teal.500" isExternal>
-                                            {event?.url}<ExternalLinkIcon mx='2px' />
+                                    <Td
+                                        width={isSmallerThan480 ? '30%' : '20%'}
+                                        px={0}
+                                        fontWeight={'bold'}
+                                    >
+                                        URL
+                                    </Td>
+                                    <Td
+                                        width={isSmallerThan480 ? '70%' : '80%'}
+                                        px={0}
+                                    >
+                                        <Link
+                                            href={event?.url}
+                                            target="_blank"
+                                            color="teal.500"
+                                            isExternal
+                                        >
+                                            {event?.url}
+                                            <ExternalLinkIcon mx="2px" />
                                         </Link>
                                     </Td>
                                 </Tr>
@@ -153,32 +233,42 @@ export default function EventDetail() {
                 <Box>
                     <Card mb={5}>
                         <CardHeader pb={0}>
-                            <Heading size='md'>参加申し込み</Heading>
+                            <Heading size="md">参加申し込み</Heading>
                         </CardHeader>
                         <CardBody>
-                            {user ?
-                                <ParticipationButton eventId={eventId as string} />
-                                :
+                            {user ? (
+                                <ParticipationButton
+                                    eventId={eventId as string}
+                                    status={status}
+                                    setStatus={setStatus}
+                                />
+                            ) : (
                                 <>
-                                    <Flex justifyContent='center' mb={2}>
-                                        <Text textAlign='center'>
+                                    <Flex justifyContent="center" mb={2}>
+                                        <Text textAlign="center">
                                             参加申し込みには
                                             <br />
                                             ログインが必要です
                                         </Text>
                                     </Flex>
-                                    <Flex justifyContent='center'>
-                                        <Button colorScheme='teal' as={NextLink} href='/signin'>
+                                    <Flex justifyContent="center">
+                                        <Button
+                                            colorScheme="teal"
+                                            as={NextLink}
+                                            href="/signin"
+                                        >
                                             ログインする
                                         </Button>
                                     </Flex>
                                 </>
-                            }
+                            )}
                         </CardBody>
                     </Card>
                     <Card>
                         <CardHeader pb={0}>
-                            <Heading size='md'>参加者({participants?.length} 人)</Heading>
+                            <Heading size="md">
+                                参加者({participants?.length} 人)
+                            </Heading>
                         </CardHeader>
                         <CardBody>
                             <Table variant="simple">
@@ -186,17 +276,33 @@ export default function EventDetail() {
                                     {participants?.map((participant) => {
                                         return (
                                             <Tr key={participant.userId}>
-                                                <Td py={2} _hover={{ "& .underlineOnHover": { textDecoration: "underline" } }}>
-                                                    <NextLink href={`/user/${participant.userId}`}>
-                                                        <Flex alignItems='center'>
+                                                <Td
+                                                    py={2}
+                                                    _hover={{
+                                                        '& .underlineOnHover': {
+                                                            textDecoration:
+                                                                'underline'
+                                                        }
+                                                    }}
+                                                >
+                                                    <NextLink
+                                                        href={`/user/${participant.userId}`}
+                                                    >
+                                                        <Flex alignItems="center">
                                                             <Avatar
-                                                                name={participant.name}
+                                                                name={
+                                                                    participant.name
+                                                                }
                                                                 bg="gray.100"
                                                                 color="black"
                                                                 size="sm"
                                                                 mr={2}
                                                             />
-                                                            <Text className="underlineOnHover">{participant.name}</Text>
+                                                            <Text className="underlineOnHover">
+                                                                {
+                                                                    participant.name
+                                                                }
+                                                            </Text>
                                                         </Flex>
                                                     </NextLink>
                                                 </Td>
