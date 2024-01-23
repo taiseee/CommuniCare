@@ -168,7 +168,7 @@ function NavBarContainer({
             color={['white', 'white', 'white', 'white']}
             {...props}
         >
-            <Text as={NextLink} href="/" fontSize="xl" fontWeight="bold" ml={4}>Communicare</Text>
+            <Text as={NextLink} href="/" fontSize="xl" fontWeight="bold" ml={4}>CommuniCare</Text>
             {children}
         </Flex>
     );
