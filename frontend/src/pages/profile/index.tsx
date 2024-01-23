@@ -84,7 +84,7 @@ export default function Profile() {
                 router.push('/group');
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
             });
     };
 

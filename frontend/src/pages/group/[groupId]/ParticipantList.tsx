@@ -81,9 +81,7 @@ function ParticipantList({ eventId, status }: ParticipantListProps) {
     }
 
     useEffect(() => {
-        console.log('eventId: ', eventId);
         fetchParticipants();
-        console.log('end');
     }, [status]);
 
     return (
