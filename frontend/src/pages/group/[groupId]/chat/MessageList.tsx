@@ -11,9 +11,9 @@ type ItemProps = {
     message: Message;
 };
 
-export function MessageList({ messages }: Props): JSX.Element {
+export default function MessageList({ messages }: Props): JSX.Element {
     const chatService = new ChatService();
-    const messagesEndRef = useRef(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (messagesEndRef.current) {
