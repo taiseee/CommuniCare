@@ -10,6 +10,7 @@ from ..service import EventExtractor
 @on_document_updated(
     document="eventUrls/{id}",
     memory=512,
+    region="asia-northeast1",
     timeout_sec=300,
 )
 def get_events_on_updated(event_on_updated: Event[Change[DocumentSnapshot | None]]) -> None:
