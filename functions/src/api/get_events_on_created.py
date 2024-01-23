@@ -9,6 +9,7 @@ from ..service import EventExtractor
 
 @on_document_created(
     document="eventUrls/{id}",
+    region="asia-northeast1",
     memory=512,
     timeout_sec=300,
 )

@@ -18,21 +18,22 @@ interface Participant {
 
 interface ParticipantListProps {
     eventId: string;
+    status: number;
 }
 
-function ParticipantList({ eventId }: ParticipantListProps) {
+function ParticipantList({ eventId, status }: ParticipantListProps) {
     const [participants, setParticipants] = useState<Participant[]>([]);
     const params = useParams();
     async function fetchParticipants() {
         try {
             // グループに参加しているユーザーのidを取得
-            const groupUsersRef = collection(db, 'groupUsers');
-            const groupUsersQ = query(
-                groupUsersRef,
+            const userGroupsRef = collection(db, 'userGroups');
+            const userGroupsQ = query(
+                userGroupsRef,
                 where('groupId', '==', params.groupId)
             );
-            const groupUsersSnapshot = await getDocs(groupUsersQ);
-            const userIds = groupUsersSnapshot.docs.map(
+            const userGroupsSnapshot = await getDocs(userGroupsQ);
+            const userIds = userGroupsSnapshot.docs.map(
                 (doc) => doc.data().userId
             );
 
@@ -47,21 +48,33 @@ function ParticipantList({ eventId }: ParticipantListProps) {
                 .filter((doc) => doc.data().participationStatus === 1)
                 .map((doc) => doc.data().userId);
 
+            if (participantIds.length === 0) return setParticipants([]);
+            
+            // クエリのin句に渡せるようにidを30個ずつに分割
+            const chunkSize: number = 30;
+            const participantIdChunks: string[][] = [];
+            for (let i = 0; i < participantIds.length; i += chunkSize) {
+                participantIdChunks.push(participantIds.slice(i, i + chunkSize));
+            }
+
             // ユーザーのデータを取得
             const usersRef = collection(db, 'users');
-            const usersQ = query(
-                usersRef,
-                where(documentId(), 'in', participantIds)
+            const usersSnapshots = await Promise.all(
+                participantIdChunks.map((participantIds) => {
+                    const usersQ = query(
+                        usersRef,
+                        where(documentId(), 'in', participantIds),
+                        where(documentId(), 'in', userIds)
+                    );
+                    return getDocs(usersQ);
+                })
             );
-            const usersSnapshot = await getDocs(usersQ);
-            const newParticipants: Participant[] = [];
-            usersSnapshot.forEach((doc) => {
-                newParticipants.push({
-                    ...(doc.data() as Participant),
-                    id: doc.id
+            const participantLists = usersSnapshots.flatMap((snapshot) => {
+                return snapshot.docs.map((doc) => {
+                    return { ...(doc.data() as Participant), id: doc.id };
                 });
             });
-            setParticipants(newParticipants);
+            setParticipants(participantLists);
         } catch (error) {
             console.error('Error fetching events: ', error);
         }
@@ -69,7 +82,7 @@ function ParticipantList({ eventId }: ParticipantListProps) {
 
     useEffect(() => {
         fetchParticipants();
-    }, []);
+    }, [status]);
 
     return (
         <>

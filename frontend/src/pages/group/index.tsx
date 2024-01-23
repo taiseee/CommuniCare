@@ -34,12 +34,25 @@ function GroupList() {
             return;
         }
 
+        // クエリのin句に渡せるようにidを30個ずつに分割
+        const chunkSize: number = 30;
+        const groupIdChunks: string[][] = [];
+        for (let i = 0; i < groupIds.length; i += chunkSize) {
+            groupIdChunks.push(groupIds.slice(i, i + chunkSize));
+        };
+
         // グループのデータを取得
         const groupsRef = collection(db, 'groups');
-        const groupsQ = query(groupsRef, where(documentId(), 'in', groupIds));
-        const groupsSnapshot = await getDocs(groupsQ);
-        const groupLists = groupsSnapshot.docs.map((doc) => {
-            return { ...(doc.data() as Group), id: doc.id };
+        const groupsSnapshots = await Promise.all(
+            groupIdChunks.map((groupIds) => {
+                const groupsQ = query(groupsRef, where(documentId(), 'in', groupIds));
+                return getDocs(groupsQ);
+            })
+        );
+        const groupLists = groupsSnapshots.flatMap(snapshot => {
+            return snapshot.docs.map((doc) => {
+                return { ...(doc.data() as Group), id: doc.id };
+            });
         });
         setGroups(groupLists);
     }

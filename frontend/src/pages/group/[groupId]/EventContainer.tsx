@@ -4,27 +4,30 @@ import {
     getDocs,
     query,
     where,
-    documentId
+    documentId,
+    Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebaseConfig';
 import {
     Box,
     GridItem,
     Heading,
-    Text,
     SkeletonText,
     Skeleton,
     Flex,
     Divider,
     Tag,
     TagLabel,
-    TagCloseButton
+    TagCloseButton,
+    Badge,
+    Spacer,
+    Text
 } from '@chakra-ui/react';
-import ParticipationButton from './ParticipationButton';
-import ParticipantList from './ParticipantList';
+import NextLink from 'next/link';
 import { useParams } from 'next/navigation';
+import ParticipationContainer from './ParticipationContainer';
 
-interface Event {
+export interface Event {
     id: string;
     title: string;
     category: string;
@@ -32,6 +35,8 @@ interface Event {
     location: string;
     description: string;
     contact: string;
+    host: string;
+    updatedAt: Timestamp;
 }
 
 function EventContainer() {
@@ -56,25 +61,33 @@ function EventContainer() {
                 return;
             }
 
+            // クエリのin句に渡せるようにidを30個ずつに分割
+            const chunkSize: number = 30;
+            const eventIdChunks: string[][] = [];
+            for (let i = 0; i < eventIds.length; i += chunkSize) {
+                eventIdChunks.push(eventIds.slice(i, i + chunkSize));
+            };
+
             // イベントのデータを取得
             const eventsRef = collection(db, 'events');
-            const eventsQ = query(
-                eventsRef,
-                where(documentId(), 'in', eventIds)
+            const eventsSnapshots = await Promise.all(
+                eventIdChunks.map((eventIds) => {
+                    const eventsQ = query(eventsRef, where(documentId(), 'in', eventIds));
+                    return getDocs(eventsQ);
+                })
             );
-            const eventsSnapshot = await getDocs(eventsQ);
-            const newEvents: Event[] = [];
-            eventsSnapshot.forEach((doc) => {
-                newEvents.push({
-                    ...(doc.data() as Event),
-                    id: doc.id
+
+            const eventLists = eventsSnapshots.flatMap(snapshot => {
+                return snapshot.docs.map((doc) => {
+                    return { ...(doc.data() as Event), id: doc.id };
                 });
             });
-            setEvents(newEvents);
+
+            setEvents(eventLists);
         } catch (error) {
             console.error('Error fetching events: ', error);
         }
-    };
+    }
 
     useEffect(() => {
         fetchEvents();
@@ -152,27 +165,24 @@ function EventContainer() {
                         {events.map((event) => (
                             <Box key={event.id}>
                                 <Flex flexDirection="column" p={4}>
-                                    <Flex justify="space-between">
-                                        <Heading size="md">
-                                            {event.title}
-                                        </Heading>
-                                        <Tag>{event.category}</Tag>
+                                    <Flex py={1} as={NextLink} href={`/${event.id}`}>
+                                        <Box>
+                                            <Badge me={1}>{event.host}</Badge>
+                                            {event.category ?
+                                                <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
+                                                :
+                                                <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
+                                            }
+                                        </Box>
+                                        <Spacer />
+                                        <Text ps={2} color={'grey'} fontSize='sm'>
+                                            {event.updatedAt.toDate().toLocaleDateString()}
+                                        </Text>
                                     </Flex>
-                                    <Text fontSize="sm">
-                                        日時: {event.dateTime}
-                                    </Text>
-                                    <Text fontSize="sm">
-                                        場所: {event.location}
-                                    </Text>
-                                    <Text fontSize="sm">
-                                        詳細: <br />
-                                        {event.description}
-                                    </Text>
-                                    <Text fontSize="sm">
-                                        連絡先: {event.contact}
-                                    </Text>
-                                    <ParticipantList eventId={event.id} />
-                                    <ParticipationButton eventId={event.id} />
+                                    <Heading size="sm" as={NextLink} href={`/${event.id}`}>
+                                        {event.title}
+                                    </Heading>
+                                    <ParticipationContainer event={event} />
                                 </Flex>
                                 <Divider />
                             </Box>

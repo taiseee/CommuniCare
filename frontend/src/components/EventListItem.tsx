@@ -8,18 +8,38 @@ export default function EventListItem({ event }: { event: EventListItem }) {
         <Box as={NextLink} href={`/${event.eventId}`} _hover={{ "& .underlineOnHover": { textDecoration: "underline" } }}>
             <Box pb={2}>
                 <Flex py={1}>
-                    <Box>
-                        <Badge me={1}>{event.host}</Badge>
-                        {event.category ?
-                            <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
+                    {
+                        !isSmallerThan480 ?
+                            <>
+                                <Box>
+                                    <Badge me={1}>{event.host}</Badge>
+                                    {event.category ?
+                                        <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
+                                        :
+                                        <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
+                                    }
+                                </Box>
+                                <Spacer />
+                                <Text ps={2} color={'grey'} fontSize='sm'>
+                                    {event.updatedAt.toDate().toLocaleDateString()}
+                                </Text>
+                            </>
                             :
-                            <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
-                        }
-                    </Box>
-                    <Spacer />
-                    <Text ps={2} color={'grey'} fontSize='sm'>
-                        {event.updatedAt.toDate().toLocaleDateString()}
-                    </Text>
+                            <>
+                                <Box>
+                                    <Text color={'grey'} fontSize='sm'>
+                                        {event.updatedAt.toDate().toLocaleDateString()}
+                                    </Text>
+                                    <Badge me={1}>{event.host}</Badge>
+                                    {event.category ?
+                                        <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
+                                        :
+                                        <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
+                                    }
+                                </Box>
+                            </>
+                    }
+                    
                 </Flex>
                 <Text fontSize='lg' fontWeight={'bold'} py={1} className="underlineOnHover">
                     {event.title}

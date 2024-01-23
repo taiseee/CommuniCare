@@ -16,7 +16,7 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
 export const db = getFirestore();
-export const functions = getFunctions(app);
+export const functions = getFunctions(app, 'asia-northeast1');
 // if (process.env.NODE_ENV === 'development') {
 //     connectFirestoreEmulator(db, 'localhost', 8080);
 // }

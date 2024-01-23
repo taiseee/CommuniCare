@@ -3,6 +3,7 @@ from openai import OpenAI
 import numpy as np
 
 @https_fn.on_call(
+    region="asia-northeast1",
     memory=512,
     timeout_sec=300,
     cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post"])
