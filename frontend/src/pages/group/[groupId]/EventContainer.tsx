@@ -61,21 +61,29 @@ function EventContainer() {
                 return;
             }
 
+            // クエリのin句に渡せるようにidを30個ずつに分割
+            const chunkSize: number = 30;
+            const eventIdChunks: string[][] = [];
+            for (let i = 0; i < eventIds.length; i += chunkSize) {
+                eventIdChunks.push(eventIds.slice(i, i + chunkSize));
+            };
+
             // イベントのデータを取得
             const eventsRef = collection(db, 'events');
-            const eventsQ = query(
-                eventsRef,
-                where(documentId(), 'in', eventIds)
+            const eventsSnapshots = await Promise.all(
+                eventIdChunks.map((eventIds) => {
+                    const eventsQ = query(eventsRef, where(documentId(), 'in', eventIds));
+                    return getDocs(eventsQ);
+                })
             );
-            const eventsSnapshot = await getDocs(eventsQ);
-            const newEvents: Event[] = [];
-            eventsSnapshot.forEach((doc) => {
-                newEvents.push({
-                    ...(doc.data() as Event),
-                    id: doc.id
+
+            const eventLists = eventsSnapshots.flatMap(snapshot => {
+                return snapshot.docs.map((doc) => {
+                    return { ...(doc.data() as Event), id: doc.id };
                 });
             });
-            setEvents(newEvents);
+
+            setEvents(eventLists);
         } catch (error) {
             console.error('Error fetching events: ', error);
         }
