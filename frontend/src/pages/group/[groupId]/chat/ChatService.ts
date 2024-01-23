@@ -84,7 +84,6 @@ class ChatService {
             } as Profile);
         });
         setMembers(members);
-        console.log("init");
     }
 
     async addMessage(textMessage: string | null, imageUrl: string | null) {

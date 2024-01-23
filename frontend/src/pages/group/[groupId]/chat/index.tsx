@@ -12,14 +12,12 @@ function ChatScreen(): JSX.Element {
     useEffect(() => {
         const fetchMembers = async () => {
             await chatService.fetchMembers(setMembers);
-            console.log(chatService.members);
         };
         fetchMembers();
     }, []);
 
     useEffect(() => {
         if (members.length === 0) return;
-        console.log(chatService.members);
         const unsubscribe = chatService.createListener(setMessages, members);
         return () => unsubscribe();
     }, [members]);
