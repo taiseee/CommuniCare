@@ -7,15 +7,15 @@ import MemberContainer from './MemberContainer';
 import EventContainer from './EventContainer';
 
 function GroupDetail() {
-   const params = useParams();
-   const chatPath = `/group/${params.groupId}/chat`;
+    const params = useParams();
+    const chatPath = `/group/${params.groupId}/chat`;
     return (
         <>
             <Box p={4} bg="gray.200">
                 <Grid
                     templateColumns={{
                         base: 'repeat(1, 1fr)',
-                        md: 'repeat(3, 1fr)'
+                        xl: 'repeat(3, 1fr)'
                     }}
                     templateRows={{
                         base: 'repeat(1, 1fr)',
