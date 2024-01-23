@@ -1,4 +1,4 @@
-from firebase_functions import scheduler_fn
+from firebase_functions import scheduler_fn, https_fn
 from firebase_admin import firestore
 import requests
 from bs4 import BeautifulSoup
@@ -7,11 +7,12 @@ from datetime import datetime
 @scheduler_fn.on_schedule(
     schedule="every day 23:59",
     timezone=scheduler_fn.Timezone("Asia/Tokyo"),
+    region="asia-northeast1",
     memory=512,
 )
 def get_event_urls_from_asumin_on_schedule(schedule_event: scheduler_fn.ScheduledEvent) -> None:
     date = datetime.now().strftime("%Y.%m.%d")
-
+    print("date: " + date)
     response = requests.get("https://www.fnvc.jp/event/result/2")
     content = response.content
 
@@ -19,6 +20,7 @@ def get_event_urls_from_asumin_on_schedule(schedule_event: scheduler_fn.Schedule
     events_ul = soup.select(".news-block ul")[0]
     events = events_ul.select("li")
     if len(events) == 0:
+        print("No events")
         return None
 
     for event in events:
@@ -34,4 +36,7 @@ def get_event_urls_from_asumin_on_schedule(schedule_event: scheduler_fn.Schedule
                     "updatedAt": firestore.SERVER_TIMESTAMP,
                 }
             )
+            print("added: " + posted_date)
+        else:
+            print("not added: " + posted_date)
     return None

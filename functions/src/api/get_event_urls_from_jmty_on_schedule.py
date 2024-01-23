@@ -1,19 +1,21 @@
-from firebase_functions import scheduler_fn, https_fn
+from firebase_functions import scheduler_fn
 from firebase_admin import firestore
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
+from datetime import datetime
 
 @scheduler_fn.on_schedule(
     schedule="every day 23:59",
     timezone=scheduler_fn.Timezone("Asia/Tokyo"),
+    region="asia-northeast1",
     memory=512,
 )
 def get_event_urls_from_jmty_on_schedule(schedule_event: scheduler_fn.ScheduledEvent) -> None:
     date = datetime.now().date()
+    
     current_year = datetime.now().year
     
-    response = requests.get("https://jmty.jp/fukuoka/com-npo")
+    response = requests.get("https://jmty.jp/fukuoka/com-npo/g-all/a-730-fukuoka")
     content = response.content
 
     soup = BeautifulSoup(content, "html.parser")
@@ -22,6 +24,7 @@ def get_event_urls_from_jmty_on_schedule(schedule_event: scheduler_fn.ScheduledE
     events = soup.select(".p-articles-list ul li")[:-1]
     
     if len(events) == 0:
+        print("No events")
         return None
     for event in events:
         update_date_str = event.select(".p-item-history > div")[0].text # type: ignore
@@ -44,6 +47,7 @@ def get_event_urls_from_jmty_on_schedule(schedule_event: scheduler_fn.ScheduledE
                     },
                     merge=True
                 )
+                print("updated: " + update_date_str)
             else:
                 event_urls_ref.set(
                     {
@@ -52,4 +56,7 @@ def get_event_urls_from_jmty_on_schedule(schedule_event: scheduler_fn.ScheduledE
                         "updatedAt": firestore.SERVER_TIMESTAMP,
                     }
                 )
-    return https_fn.Response("success", status=200)
+                print("added: " + update_date_str)
+        else:
+            print("not added: " + update_date_str)
+    return None
