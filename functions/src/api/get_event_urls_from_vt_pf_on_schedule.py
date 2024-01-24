@@ -42,6 +42,7 @@ def get_event_urls_from_vt_pf_on_schedule(schedule_event: scheduler_fn.Scheduled
         event_urls_ref.set(
             {
                 "url": event_url,
+                "source": "ボランティアプラットフォーム",
                 "createdAt": firestore.SERVER_TIMESTAMP,
                 "updatedAt": firestore.SERVER_TIMESTAMP,
             }

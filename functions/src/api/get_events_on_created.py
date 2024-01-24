@@ -18,6 +18,7 @@ def get_events_on_created(event_on_created: Event[DocumentSnapshot | None]) -> N
         return None
 
     event_url = event_on_created.data.to_dict()["url"] # type: ignore
+    source = event_on_created.data.to_dict()["source"] # type: ignore
     event_extractor = EventExtractor()
     webtxt = event_extractor.get_webtxt(event_url)
     events = event_extractor.get_events(webtxt)
@@ -34,6 +35,7 @@ def get_events_on_created(event_on_created: Event[DocumentSnapshot | None]) -> N
                 "location": event.get("location"),
                 "description": event.get("description"),
                 "url": event_url,
+                "source": source,
                 "contact": event.get("contact"),
                 "createdAt": firestore.SERVER_TIMESTAMP,
                 "updatedAt": firestore.SERVER_TIMESTAMP,

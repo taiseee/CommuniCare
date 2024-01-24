@@ -32,6 +32,7 @@ def get_event_urls_from_asumin_on_schedule(schedule_event: scheduler_fn.Schedule
             event_urls_ref.add(
                 {
                     "url": event_url,
+                    "source": "あすみん",
                     "createdAt": firestore.SERVER_TIMESTAMP,
                     "updatedAt": firestore.SERVER_TIMESTAMP,
                 }

@@ -52,6 +52,7 @@ def get_event_urls_from_jmty_on_schedule(schedule_event: scheduler_fn.ScheduledE
                 event_urls_ref.set(
                     {
                         "url": event_url,
+                        "source": "ジモティー",
                         "createdAt": firestore.SERVER_TIMESTAMP,
                         "updatedAt": firestore.SERVER_TIMESTAMP,
                     }
