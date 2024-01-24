@@ -112,7 +112,7 @@ export default function EventHaeder() {
                                                 isInvalid={errors.groupName ? true : false}
                                             >
                                                 <Input
-                                                    width={{ base: '200px', md: '500px' }}
+                                                    width={{ base: '150px', md: '500px' }}
                                                     type="text"
                                                     id="groupName"
                                                     {...register('groupName', {
