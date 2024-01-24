@@ -43,6 +43,7 @@ interface EventDetail {
     description: string;
     url: string;
     contact: string;
+    source: string;
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }
@@ -221,7 +222,7 @@ export default function EventDetail() {
                                             color="teal.500"
                                             isExternal
                                         >
-                                            {event?.url}
+                                            {event?.source}
                                             <ExternalLinkIcon mx="2px" />
                                         </Link>
                                     </Td>
