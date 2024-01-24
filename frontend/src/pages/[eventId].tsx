@@ -57,7 +57,7 @@ export default function EventDetail() {
     const { user } = useAuthContext();
     const [isSmallerThan480] = useMediaQuery('(max-width: 480px)');
     const [event, setEvent] = useState<EventDetail>();
-    const [status, setStatus] = useState<number>(0);
+    const [status, setStatus] = useState<number>(2);
     const [participants, setParticipants] = useState<eventPatipant[]>([]);
     const { eventId } = router.query;
 
