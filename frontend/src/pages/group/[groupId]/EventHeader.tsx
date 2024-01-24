@@ -12,6 +12,11 @@ import {
     Input,
     FormControl,
     FormErrorMessage,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    IconButton,
 } from "@chakra-ui/react";
 import {
     EditIcon,
@@ -91,8 +96,8 @@ export default function EventHaeder() {
         <Box mb="4">
             <Card>
                 <CardHeader>
-                    <Flex alignItems="center" justifyContent="space-between">
-                        <Flex alignItems="center">
+                    <Flex alignItems="center">
+                        <Flex alignItems="center" width="80%">
                             {
                                 !isEditing ?
                                     <>
@@ -112,7 +117,7 @@ export default function EventHaeder() {
                                                 isInvalid={errors.groupName ? true : false}
                                             >
                                                 <Input
-                                                    width={{ base: '150px', md: '500px' }}
+                                                    width="100%"
                                                     type="text"
                                                     id="groupName"
                                                     {...register('groupName', {
@@ -133,13 +138,23 @@ export default function EventHaeder() {
                             }
                             
                         </Flex>
-                        <Flex alignItems="center">
-                            <Button onClick={() => handleExitButtonClick()} ml="2">
-                                退出する
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M19.285 12h-8.012m5.237 3.636L20 12l-3.49-3.636M13.455 7V4H4v16h9.455v-3" />
-                                </svg>
-                            </Button>
+                        <Flex alignItems="center" width="20%" flexDirection="row-reverse">
+                            <Menu>
+                                <MenuButton
+                                    as={IconButton}
+                                    aria-label="Options"
+                                    icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256"><path fill="currentColor" d="M112 60a16 16 0 1 1 16 16a16 16 0 0 1-16-16m16 52a16 16 0 1 0 16 16a16 16 0 0 0-16-16m0 68a16 16 0 1 0 16 16a16 16 0 0 0-16-16"/></svg>}
+                                    variant="ghost"                                
+                                />
+                                <MenuList minWidth="120px">
+                                    <MenuItem onClick={() => handleExitButtonClick()}>
+                                        退出する
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M19.285 12h-8.012m5.237 3.636L20 12l-3.49-3.636M13.455 7V4H4v16h9.455v-3" />
+                                        </svg>
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
                         </Flex>
                     </Flex>
                 </CardHeader>

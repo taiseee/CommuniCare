@@ -21,7 +21,8 @@ import {
     TagCloseButton,
     Badge,
     Spacer,
-    Text
+    Text,
+    useMediaQuery,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useParams } from 'next/navigation';
@@ -41,6 +42,7 @@ export interface Event {
 
 function EventContainer() {
     const [events, setEvents] = useState<Event[]>([]);
+    const [isSmallerThan480] = useMediaQuery("(max-width: 480px)");
     const params = useParams();
 
     async function fetchEvents() {
@@ -166,18 +168,37 @@ function EventContainer() {
                             <Box key={event.id}>
                                 <Flex flexDirection="column" p={4}>
                                     <Flex py={1} as={NextLink} href={`/${event.id}`}>
-                                        <Box>
-                                            <Badge me={1}>{event.host}</Badge>
-                                            {event.category ?
-                                                <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
-                                                :
-                                                <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
-                                            }
-                                        </Box>
-                                        <Spacer />
-                                        <Text ps={2} color={'grey'} fontSize='sm'>
-                                            {event.updatedAt.toDate().toLocaleDateString()}
-                                        </Text>
+                                    {
+                                        !isSmallerThan480 ?
+                                            <>
+                                                <Box>
+                                                    <Badge me={1}>{event.host}</Badge>
+                                                    {event.category ?
+                                                        <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
+                                                        :
+                                                        <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
+                                                    }
+                                                </Box>
+                                                <Spacer />
+                                                <Text ps={2} color={'grey'} fontSize='sm'>
+                                                    {event.updatedAt.toDate().toLocaleDateString()}
+                                                </Text>
+                                            </>
+                                            :
+                                            <>
+                                                <Box>
+                                                    <Text color={'grey'} fontSize='sm'>
+                                                        {event.updatedAt.toDate().toLocaleDateString()}
+                                                    </Text>
+                                                    <Badge me={1}>{event.host}</Badge>
+                                                    {event.category ?
+                                                        <Badge variant='subtle' colorScheme='green'>ボランティア</Badge>
+                                                        :
+                                                        <Badge variant='subtle' colorScheme='blue'>地域活動</Badge>
+                                                    }
+                                                </Box>
+                                            </>
+                                    }
                                     </Flex>
                                     <Heading size="sm" as={NextLink} href={`/${event.id}`}>
                                         {event.title}
